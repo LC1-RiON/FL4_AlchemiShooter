@@ -51,6 +51,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pattern->Setting(1);
 	int playTimer = 0;
 
+	int material[3] = {};
+
 	const int ALLBEAM = 500;
 	float beamX[ALLBEAM];
 	float beamY[ALLBEAM];
@@ -220,6 +222,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					enemyHP[j]--;
 					if (enemyHP[j] <= 0) {
 						enemyAlive[j] = false;
+						material[enemyType[j]]++;
 						homingLocked = ENEMYLIMIT * 10;
 						for (int i = 0; i < ENEMYLIMIT; i++)
 						{
