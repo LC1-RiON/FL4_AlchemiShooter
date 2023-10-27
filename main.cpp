@@ -124,6 +124,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (enemyAlive[i] == true) {
 				enemyX[i] += enemyMoveX[i];
 				enemyY[i] += enemyMoveY[i];
+				if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
+					enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
+					enemyAlive[i] = false;
+				}
 			}
 		}
 		/*ŽËŒ‚*/
