@@ -275,7 +275,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		// ブレイクポイントを用いたデバッグポーズ
 		if (keys[KEY_INPUT_P] == 1 && oldkeys[KEY_INPUT_P] == 0) {
-			WaitTimer(0);
+			WaitTimer(0);	/*<-ここにブレイクポイント*/
 		}
 	}
 
@@ -287,12 +287,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 bool InitializeWindow()
 {
+	// Log.txtの出力停止
+	SetOutApplicationLogValidFlag(FALSE);
 	// ウィンドウモード
 	ChangeWindowMode(TRUE);
 	// ウィンドウサイズ変更不可
 	SetWindowSizeChangeEnableFlag(FALSE);
-	// Log.txtの出力停止
-	SetOutApplicationLogValidFlag(FALSE);
 	// ウィンドウタイトル
 	SetMainWindowText(TITLE);
 	// 解像度、カラービット数設定
