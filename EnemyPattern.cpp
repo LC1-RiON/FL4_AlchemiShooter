@@ -66,7 +66,6 @@ EnemyPattern::EnemyPattern()
 		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		}
 	};
-	int hp[TOTALWAVE][WAVELIMIT] = {};
 	int spawnSet[TOTALWAVE][WAVELIMIT] = {
 		{
 30,50,70,90,110,130,150,170,190,210,
@@ -390,13 +389,13 @@ EnemyPattern::EnemyPattern()
 			switch (type[i][j])
 			{
 			case slime:
-				hp[i][j] = 1;
+				hp[i][j] = 3;
 				break;
 			case wolf:
-				hp[i][j] = 2;
+				hp[i][j] = 7;
 				break;
 			case fairy:
-				hp[i][j] = 3;
+				hp[i][j] = 6;
 				break;
 			}
 		}

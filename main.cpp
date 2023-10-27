@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int enemyHP[ENEMYLIMIT] = {};
 	int homingTarget[ENEMYLIMIT] = {};
 	bool enemyAlive[ENEMYLIMIT] = {};
-	for(int i = 0; i < ENEMYLIMIT; i++)
+	for (int i = 0; i < ENEMYLIMIT; i++)
 	{
 		homingTarget[i] = ENEMYLIMIT;
 		enemyAlive[i] = false;
@@ -200,7 +200,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					break;
 				}
 				if (beamY[i] <= -beamR || beamY[i] >= areaY + beamR ||
-					beamX[i] <= -beamR || beamX[i] >= areaX + beamR) { shot[i] = false; }
+					beamX[i] <= -beamR || beamX[i] >= areaX + beamR) {
+					shot[i] = false;
+				}
 			}
 		}
 		/*è’ìÀîªíË*/
@@ -211,12 +213,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (shot[i] == true && enemyAlive[j] == true &&
 					pow(beamX[i] - enemyX[j], 2.0) + pow(beamY[i] - enemyY[j], 2.0) <= pow(beamR + enemyR, 2.0)) {
 					shot[i] = false;
-					enemyAlive[j] = false;
-					homingLocked = ENEMYLIMIT * 10;
-					for (int i = 0; i < ENEMYLIMIT; i++)
-					{
-						if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
-							homingLocked = homingTarget[i];
+					enemyHP[j]--;
+					if (enemyHP[j] <= 0) {
+						enemyAlive[j] = false;
+						homingLocked = ENEMYLIMIT * 10;
+						for (int i = 0; i < ENEMYLIMIT; i++)
+						{
+							if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+								homingLocked = homingTarget[i];
+							}
 						}
 					}
 				}
