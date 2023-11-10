@@ -129,6 +129,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
 					enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
 					enemyAlive[i] = false;
+					homingLocked = ENEMYLIMIT * 10;
+					for (int i = 0; i < ENEMYLIMIT; i++)
+					{
+						if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+							homingLocked = homingTarget[i];
+						}
+					}
 				}
 			}
 		}
@@ -137,13 +144,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
 			while (shot[shotNum] == true) { shotNum++; }
 			/* NormalShot */
-			beamX[shotNum] = x;
-			beamY[shotNum] = y;
-			beamMoveY[shotNum] = -10;
-			shot[shotNum] = true;
-			beamType[shotNum++] = normal;
-			if (shotNum >= ALLBEAM) { shotNum = 0; }
-			reload = 3;
+			//beamX[shotNum] = x;
+			//beamY[shotNum] = y;
+			//beamMoveY[shotNum] = -10;
+			//shot[shotNum] = true;
+			//beamType[shotNum++] = normal;
+			//if (shotNum >= ALLBEAM) { shotNum = 0; }
+			//reload = 3;
 
 			/* TwinShot */
 			//for (int i = 1; i > -2; i -= 2) {
@@ -159,16 +166,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//reload = 3;
 
 			/* HomingShot */
-			//beamX[shotNum] = x;
-			//beamY[shotNum] = y;
-			//beamMoveX[shotNum] = 0;
-			//beamMoveY[shotNum] = 1;
-			//shot[shotNum] = true;
-			//beamType[shotNum] = homing;
-			//forHoming[shotNum] = 0;
-			//shotNum++;
-			//if (shotNum >= _countof(shot)) { shotNum = 0; }
-			//reload = 20;
+			beamX[shotNum] = x;
+			beamY[shotNum] = y;
+			beamMoveX[shotNum] = 0;
+			beamMoveY[shotNum] = 1;
+			shot[shotNum] = true;
+			beamType[shotNum] = homing;
+			forHoming[shotNum] = 0;
+			shotNum++;
+			if (shotNum >= _countof(shot)) { shotNum = 0; }
+			reload = 20;
 		}
 		/*射撃弾*/
 		for (int i = 0; i < ALLBEAM; i++)
@@ -194,7 +201,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					beamX[i] += beamMoveX[i];
 					beamY[i] += beamMoveY[i];
 					if (forHoming[i] < 100) { forHoming[i]++; }
-					else {
+					else if (forHoming[i] >= 100 && homingLocked <= ENEMYLIMIT) {
 						float distance = sqrtf(
 							powf(float(enemyX[homingLocked]) - beamX[i], 2.0f) +
 							powf(float(enemyY[homingLocked]) - beamY[i], 2.0f));
@@ -279,6 +286,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
 		DrawFormatString(0, 700, GetColor(255, 255, 255), "%dx%d_LeftTop:%d", areaX, areaY, areaLeft);
+		DrawFormatString(760, 20, GetColor(255, 255, 255), "Material1:%d", material[0]);
+		DrawFormatString(760, 40, GetColor(255, 255, 255), "Material2:%d", material[1]);
+		DrawFormatString(760, 60, GetColor(255, 255, 255), "Material3:%d", material[2]);
 		// フリップ（表裏反転）
 		ScreenFlip();
 
