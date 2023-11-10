@@ -61,6 +61,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float beamMoveY[ALLBEAM];
 	bool shot[ALLBEAM];
 	int beamType[ALLBEAM];
+	int power[ALLBEAM];
 	int forHoming[ALLBEAM];
 	int homingLocked = ENEMYLIMIT * 10;
 	for (int i = 0; i < ALLBEAM; i++) {
@@ -106,11 +107,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		/*Ž©‹@ˆÚ“®*/
 		if (keys[KEY_INPUT_RIGHT] == 1) {
 			x += 4;
-			if (x > areaX) { x = areaX; }
+			if (x > areaX) {
+				x = areaX;
+				//if (oldkeys[KEY_INPUT_RIGHT] == 0) {
+				//	x = 0;
+				//}
+			}
 		}
 		if (keys[KEY_INPUT_LEFT] == 1) {
 			x -= 4;
-			if (x < 0) { x = 0; }
+			if (x < 0) {
+				x = 0;
+				//if (oldkeys[KEY_INPUT_LEFT] == 0) {
+				//	x = areaX;
+				//}
+			}
 		}
 		if (keys[KEY_INPUT_DOWN] == 1) {
 			y += 4;
@@ -120,6 +131,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			y -= 4;
 			if (y < 0) { y = 0; }
 		}
+
 		/*“GˆÚ“®*/
 		for (int i = 0; i < ENEMYLIMIT; i++)
 		{
@@ -139,18 +151,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 		}
+
 		/*ŽËŒ‚*/
 		if (reload > 0) { reload--; }
 		if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
 			while (shot[shotNum] == true) { shotNum++; }
 			/* NormalShot */
-			//beamX[shotNum] = x;
-			//beamY[shotNum] = y;
-			//beamMoveY[shotNum] = -10;
-			//shot[shotNum] = true;
-			//beamType[shotNum++] = normal;
-			//if (shotNum >= ALLBEAM) { shotNum = 0; }
-			//reload = 3;
+			beamX[shotNum] = x;
+			beamY[shotNum] = y;
+			beamMoveY[shotNum] = -10;
+			shot[shotNum] = true;
+			beamType[shotNum] = normal;
+			power[shotNum++] = 2;
+			if (shotNum >= ALLBEAM) { shotNum = 0; }
+			reload = 8;
 
 			/* TwinShot */
 			//for (int i = 1; i > -2; i -= 2) {
@@ -159,24 +173,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//	beamMoveX[shotNum] = 2 * i;
 			//	beamMoveY[shotNum] = -10;
 			//	shot[shotNum] = true;
-			//	if (i > 0) { beamType[shotNum++] = right; }
-			//	else { beamType[shotNum++] = left; }
+			//	if (i > 0) { beamType[shotNum] = right; }
+			//	else { beamType[shotNum] = left; }
+			// power[shotNum++] = 1;
 			//	if (shotNum >= _countof(shot)) { shotNum = 0; }
 			//}
-			//reload = 3;
+			//reload = 8;
 
 			/* HomingShot */
-			beamX[shotNum] = x;
-			beamY[shotNum] = y;
-			beamMoveX[shotNum] = 0;
-			beamMoveY[shotNum] = 1;
-			shot[shotNum] = true;
-			beamType[shotNum] = homing;
-			forHoming[shotNum] = 0;
-			shotNum++;
-			if (shotNum >= _countof(shot)) { shotNum = 0; }
-			reload = 20;
+			//beamX[shotNum] = x;
+			//beamY[shotNum] = y;
+			//beamMoveX[shotNum] = 0;
+			//beamMoveY[shotNum] = 1;
+			//shot[shotNum] = true;
+			//beamType[shotNum] = homing;
+			// power[shotNum] = 3;
+			//forHoming[shotNum++] = 0;
+			//if (shotNum >= _countof(shot)) { shotNum = 0; }
+			//reload = 20;
 		}
+
 		/*ŽËŒ‚’e*/
 		for (int i = 0; i < ALLBEAM; i++)
 		{
@@ -218,6 +234,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 		}
+
 		/*Õ“Ë”»’è*/
 		for (int i = 0; i < ALLBEAM; i++)
 		{
@@ -226,7 +243,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (shot[i] == true && enemyAlive[j] == true &&
 					pow(beamX[i] - enemyX[j], 2.0) + pow(beamY[i] - enemyY[j], 2.0) <= pow(beamR + enemyR, 2.0)) {
 					shot[i] = false;
-					enemyHP[j]--;
+					enemyHP[j] -= power[i];
 					if (enemyHP[j] <= 0) {
 						enemyAlive[j] = false;
 						material[enemyType[j]]++;
