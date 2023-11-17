@@ -70,7 +70,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int shotNum = 0;
 	int reload = 0;
 
-	// リソース系変数
+	int mateDigit[3] = {};
+	int digChecker;
+
+		// リソース系変数
 	int graphPlayer = LoadGraph("Graphics/player.png");
 	int sizePlayerX;
 	int sizePlayerY;
@@ -79,6 +82,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int sizeEnemyX;
 	int sizeEnemyY;
 	GetGraphSize(graphEnemy01, &sizeEnemyX, &sizeEnemyY);
+	int graphFrame = LoadGraph("Graphics/frame.png");
+	int font[10];
+	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
 
 	int bgm03 = LoadSoundMem("Sounds/stage03.mp3");
 
@@ -278,6 +284,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 		}
 
+		mateDigit[0] = 0;
+		digChecker = material[0];
+		while (digChecker != 0)
+		{
+			digChecker /= 10;
+			mateDigit[0]++;
+		}
+		mateDigit[1] = 0;
+		digChecker = material[1];
+		while (digChecker != 0)
+		{
+			digChecker /= 10;
+			mateDigit[1]++;
+		}
+		mateDigit[2] = 0;
+		digChecker = material[2];
+		while (digChecker != 0)
+		{
+			digChecker /= 10;
+			mateDigit[2]++;
+		}
+
 		// DRAW
 		DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
 		DrawCircle(x + areaLeft, y + areaTop, r, GetColor(128, 128, 255), FALSE);
@@ -295,17 +323,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			if (shot[i] == true) {
 				DrawCircle(beamX[i] + areaLeft, beamY[i] + areaTop, beamR, GetColor(255, 255, 255));
+			}
+		}
+		//DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
+		DrawGraph(0, 0, graphFrame, true);
+		DrawFormatString(0, 700, GetColor(255, 255, 255), "%dx%d_LeftTop:%d", areaX, areaY, areaLeft);
+		for (int i = 0; i < ALLBEAM; i++)
+		{
+			if (shot[i] == true) {
 				DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(255, 255, 255));
 			}
 			else {
 				DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(0, 0, 0));
 			}
 		}
-		DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
-		DrawFormatString(0, 700, GetColor(255, 255, 255), "%dx%d_LeftTop:%d", areaX, areaY, areaLeft);
-		DrawFormatString(760, 20, GetColor(255, 255, 255), "Material1:%d", material[0]);
-		DrawFormatString(760, 40, GetColor(255, 255, 255), "Material2:%d", material[1]);
-		DrawFormatString(760, 60, GetColor(255, 255, 255), "Material3:%d", material[2]);
+		for (int i = 0; i < mateDigit[0]; i++)
+		{
+			DrawExtendGraph(900 - 32 * i, 20, 932 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+		}
+		if (mateDigit[0] == 0) {
+			DrawExtendGraph(900, 20, 932, 52, font[0], true);
+		}
+		for (int i = 0; i < mateDigit[1]; i++)
+		{
+			DrawExtendGraph(1000 - 32 * i, 20, 1032 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+		}
+		if (mateDigit[1] == 0) {
+			DrawExtendGraph(1000, 20, 1032, 52, font[0], true);
+		}
+		for (int i = 0; i < mateDigit[2]; i++)
+		{
+			DrawExtendGraph(1100 - 32 * i, 20, 1132 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+		}
+		if (mateDigit[2] == 0) {
+			DrawExtendGraph(1100, 20, 1132, 52, font[0], true);
+		}
 		// フリップ（表裏反転）
 		ScreenFlip();
 
