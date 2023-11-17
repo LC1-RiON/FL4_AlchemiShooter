@@ -15,7 +15,6 @@ private:
 	int moveX[TOTALWAVE][WAVELIMIT] = {};
 	int moveY[TOTALWAVE][WAVELIMIT] = {};
 	int count = 0;
-	int setNum = 0;
 	int wave = 0;
 
 public:

@@ -70,10 +70,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int shotNum = 0;
 	int reload = 0;
 	int beamLevel[4] = { 1, 1, 1, 1 };
+	int shotMode = 0;
+
 	int mateDigit[3] = {};
 	int digChecker;
 
-		// リソース系変数
+	// リソース系変数
 	int graphPlayer = LoadGraph("Graphics/player.png");
 	int sizePlayerX;
 	int sizePlayerY;
@@ -171,45 +173,63 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			material[2] -= 15;
 			beamLevel[homing]++;
 		}
+		/*モードチェンジ*/
+		if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
+			shotMode++;
+			while (shotMode > 2) { shotMode -= 3; }
+		}
+		if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
+			shotMode--;
+			while (shotMode < 0) { shotMode += 3; }
+		}
 		/*射撃*/
 		if (reload > 0) { reload--; }
 		if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
 			while (shot[shotNum] == true) { shotNum++; }
-			/* NormalShot */
-			beamX[shotNum] = x;
-			beamY[shotNum] = y;
-			beamMoveY[shotNum] = -10;
-			shot[shotNum] = true;
-			beamType[shotNum] = normal;
-			power[shotNum++] = 10 * beamLevel[normal];
-			if (shotNum >= ALLBEAM) { shotNum = 0; }
-			reload = 8;
+			switch (shotMode)
+			{
+			case 0:
+				/* NormalShot */
+				beamX[shotNum] = x;
+				beamY[shotNum] = y;
+				beamMoveY[shotNum] = -10;
+				shot[shotNum] = true;
+				beamType[shotNum] = normal;
+				power[shotNum++] = 10 + 5 * beamLevel[normal];
+				if (shotNum >= ALLBEAM) { shotNum = 0; }
+				reload = 8;
+				break;
 
-			/* TwinShot */
-			//for (int i = 1; i > -2; i -= 2) {
-			//	beamX[shotNum] = x;
-			//	beamY[shotNum] = y;
-			//	beamMoveX[shotNum] = 2 * i;
-			//	beamMoveY[shotNum] = -10;
-			//	shot[shotNum] = true;
-			//	if (i > 0) { beamType[shotNum] = right; }
-			//	else { beamType[shotNum] = left; }
-			// power[shotNum++] = 7 * beamLevel[right];
-			//	if (shotNum >= _countof(shot)) { shotNum = 0; }
-			//}
-			//reload = 8;
+			case 1:
+				/* TwinShot */
+				for (int i = 1; i > -2; i -= 2) {
+					beamX[shotNum] = x;
+					beamY[shotNum] = y;
+					beamMoveX[shotNum] = 2 * i;
+					beamMoveY[shotNum] = -10;
+					shot[shotNum] = true;
+					if (i > 0) { beamType[shotNum] = right; }
+					else { beamType[shotNum] = left; }
+					power[shotNum++] = 6 + 3 * beamLevel[right];
+					if (shotNum >= _countof(shot)) { shotNum = 0; }
+				}
+				reload = 8;
+				break;
 
-			/* HomingShot */
-			//beamX[shotNum] = x;
-			//beamY[shotNum] = y;
-			//beamMoveX[shotNum] = 0;
-			//beamMoveY[shotNum] = 1;
-			//shot[shotNum] = true;
-			//beamType[shotNum] = homing;
-			// power[shotNum] = 30 * beamLevel[homing];
-			//forHoming[shotNum++] = 0;
-			//if (shotNum >= _countof(shot)) { shotNum = 0; }
-			//reload = 20;
+			case 2:
+				/* HomingShot */
+				beamX[shotNum] = x;
+				beamY[shotNum] = y;
+				beamMoveX[shotNum] = 0;
+				beamMoveY[shotNum] = 1;
+				shot[shotNum] = true;
+				beamType[shotNum] = homing;
+				power[shotNum] = 20 + 10 * beamLevel[homing];
+				forHoming[shotNum++] = 0;
+				if (shotNum >= _countof(shot)) { shotNum = 0; }
+				reload = 20;
+				break;
+			}
 		}
 
 		/*射撃弾*/

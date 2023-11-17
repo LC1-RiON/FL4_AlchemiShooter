@@ -6,16 +6,16 @@ EnemyPattern::EnemyPattern()
 	// 敵出現時データ
 	int typeSet[TOTALWAVE][WAVELIMIT] = {
 		{
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		},
 		{
 		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
@@ -392,16 +392,15 @@ EnemyPattern::EnemyPattern()
 				hp[i][j] = 30;
 				break;
 			case wolf:
-				hp[i][j] = 70;
+				hp[i][j] = 60;
 				break;
 			case fairy:
-				hp[i][j] = 60;
+				hp[i][j] = 40;
 				break;
 			}
 		}
 	}
 	count = 0;
-	setNum = 0;
 	wave = 0;
 }
 
@@ -412,6 +411,7 @@ EnemyPattern::~EnemyPattern()
 void EnemyPattern::Setting(int setWave)
 {
 	wave = setWave - 1;
+	count = 0;
 }
 
 bool EnemyPattern::SpawnCheck(int timer)
