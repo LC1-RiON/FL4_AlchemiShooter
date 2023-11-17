@@ -389,13 +389,13 @@ EnemyPattern::EnemyPattern()
 			switch (type[i][j])
 			{
 			case slime:
-				hp[i][j] = 3;
+				hp[i][j] = 30;
 				break;
 			case wolf:
-				hp[i][j] = 7;
+				hp[i][j] = 70;
 				break;
 			case fairy:
-				hp[i][j] = 6;
+				hp[i][j] = 60;
 				break;
 			}
 		}

@@ -69,7 +69,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	}
 	int shotNum = 0;
 	int reload = 0;
-
+	int beamLevel[4] = { 1, 1, 1, 1 };
 	int mateDigit[3] = {};
 	int digChecker;
 
@@ -157,7 +157,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 		}
-
+		/*‰Î—Í‹­‰»*/
+		if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
+			material[0] -= 15;
+			beamLevel[normal]++;
+		}
+		if (keys[KEY_INPUT_S] == 1 && oldkeys[KEY_INPUT_S] == 0 && material[1] >= 15) {
+			material[1] -= 15;
+			beamLevel[right]++;
+			beamLevel[left]++;
+		}
+		if (keys[KEY_INPUT_D] == 1 && oldkeys[KEY_INPUT_D] == 0 && material[2] >= 15) {
+			material[2] -= 15;
+			beamLevel[homing]++;
+		}
 		/*ŽËŒ‚*/
 		if (reload > 0) { reload--; }
 		if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
@@ -168,7 +181,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			beamMoveY[shotNum] = -10;
 			shot[shotNum] = true;
 			beamType[shotNum] = normal;
-			power[shotNum++] = 2;
+			power[shotNum++] = 10 * beamLevel[normal];
 			if (shotNum >= ALLBEAM) { shotNum = 0; }
 			reload = 8;
 
@@ -181,7 +194,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//	shot[shotNum] = true;
 			//	if (i > 0) { beamType[shotNum] = right; }
 			//	else { beamType[shotNum] = left; }
-			// power[shotNum++] = 1;
+			// power[shotNum++] = 7 * beamLevel[right];
 			//	if (shotNum >= _countof(shot)) { shotNum = 0; }
 			//}
 			//reload = 8;
@@ -193,7 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//beamMoveY[shotNum] = 1;
 			//shot[shotNum] = true;
 			//beamType[shotNum] = homing;
-			// power[shotNum] = 3;
+			// power[shotNum] = 30 * beamLevel[homing];
 			//forHoming[shotNum++] = 0;
 			//if (shotNum >= _countof(shot)) { shotNum = 0; }
 			//reload = 20;
