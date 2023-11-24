@@ -24,7 +24,7 @@ public:
 
 	void Setting(int setWave);
 
-	bool SpawnCheck(int timer);
+	int SpawnCheck(int timer);
 
 	void Spawn(int* enemyType, int* enemyHP, int* enemyX, int* enemyY, int* enemyMoveX, int* enemyMoveY);
 };
