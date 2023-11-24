@@ -257,8 +257,8 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,-2,2,-2,2,-2,
 2,-2,2,-2,2,2,2,2,2,2,
--2,-2,-2,-2,-2,0,0,0,0,0,
-0,0,0,0,0,9999,9999,9999,9999,9999,
+-2,-2,-2,-2,-2,9999,9999,9999,9999,9999,
+9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
@@ -414,11 +414,10 @@ void EnemyPattern::Setting(int setWave)
 	count = 0;
 }
 
-int EnemyPattern::SpawnCheck(int timer)
+bool EnemyPattern::SpawnCheck(int timer)
 {
-	if (timer >= spawn[wave][count]) { return 1; }
-	else if (spawn[wave][count] == 9999) { return 9999; }
-	return 0;
+	if (timer >= spawn[wave][count]) { return true; }
+	return false;
 }
 
 void EnemyPattern::Spawn(int* enemyType, int* enemyHP, int* enemyX, int* enemyY, int* enemyMoveX, int* enemyMoveY)
