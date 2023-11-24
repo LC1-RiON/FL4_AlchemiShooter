@@ -20,6 +20,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// ゲーム内変数
 	srand(time(NULL));
 
+	int scene = 0;
+
 	// プレイエリア_x650:y700
 	int areaLeft = 100;
 	int areaTop = 10;
@@ -50,6 +52,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	EnemyPattern* pattern = new EnemyPattern();
 	pattern->Setting(1);
 	int playTimer = 0;
+	int afterClear = 0;
 
 	int material[3] = {};
 
@@ -93,7 +96,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int bgm02 = LoadSoundMem("Sounds/stage02_b.mp3");
 	int bgm03 = LoadSoundMem("Sounds/stage03.mp3");
 	int bgmBoss = LoadSoundMem("Sounds/stageBoss.mp3");
-	int bgmMix = LoadSoundMem("Sounds/mixing.mp3");
+	int bgmMix = LoadSoundMem("Sounds/mixing.mp3");		/*ループカウント=5175*/
+	int loopTime = 0;
 
 	// キーボード入力情報、最新＆前フレーム
 	char keys[256] = {};
@@ -115,181 +119,60 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		/*ゲーム処理*/
 		// UPDATE
 		/*BGM再生*/
-		if (CheckSoundMem(bgm03) == 0) { PlaySoundMem(bgm03, DX_PLAYTYPE_BACK); }
-
-		/*自機移動*/
-		if (keys[KEY_INPUT_RIGHT] == 1) {
-			x += 4;
-			if (x > areaX) {
-				x = areaX;
-				//if (oldkeys[KEY_INPUT_RIGHT] == 0) {
-				//	x = 0;
-				//}
+		if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK); }
+		else {
+			loopTime++;
+			if (loopTime >= 5175) {
+				loopTime = 0;
+				PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK);
 			}
 		}
-		if (keys[KEY_INPUT_LEFT] == 1) {
-			x -= 4;
-			if (x < 0) {
-				x = 0;
-				//if (oldkeys[KEY_INPUT_LEFT] == 0) {
-				//	x = areaX;
-				//}
-			}
-		}
-		if (keys[KEY_INPUT_DOWN] == 1) {
-			y += 4;
-			if (y > areaY) { y = areaY; }
-		}
-		if (keys[KEY_INPUT_UP] == 1) {
-			y -= 4;
-			if (y < 0) { y = 0; }
-		}
-
-		/*敵移動*/
-		for (int i = 0; i < ENEMYLIMIT; i++)
+		switch (scene)
 		{
-			if (enemyAlive[i] == true) {
-				enemyX[i] += enemyMoveX[i];
-				enemyY[i] += enemyMoveY[i];
-				if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
-					enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
-					enemyAlive[i] = false;
-					homingLocked = ENEMYLIMIT * 10;
-					for (int i = 0; i < ENEMYLIMIT; i++)
-					{
-						if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
-							homingLocked = homingTarget[i];
-						}
-					}
+		case title:
+			if (keys[KEY_INPUT_RETURN] == 1 && oldkeys[KEY_INPUT_RETURN] == 0) {
+				scene = play;
+			}
+			break;
+
+		case play:
+			/*自機移動*/
+			if (keys[KEY_INPUT_RIGHT] == 1) {
+				x += 4;
+				if (x > areaX) {
+					x = areaX;
+					//if (oldkeys[KEY_INPUT_RIGHT] == 0) {
+					//	x = 0;
+					//}
 				}
 			}
-		}
+			if (keys[KEY_INPUT_LEFT] == 1) {
+				x -= 4;
+				if (x < 0) {
+					x = 0;
+					//if (oldkeys[KEY_INPUT_LEFT] == 0) {
+					//	x = areaX;
+					//}
+				}
+			}
+			if (keys[KEY_INPUT_DOWN] == 1) {
+				y += 4;
+				if (y > areaY) { y = areaY; }
+			}
+			if (keys[KEY_INPUT_UP] == 1) {
+				y -= 4;
+				if (y < 0) { y = 0; }
+			}
 
-		/*火力強化*/
-		if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
-			material[0] -= 15;
-			beamLevel[normal]++;
-		}
-		if (keys[KEY_INPUT_S] == 1 && oldkeys[KEY_INPUT_S] == 0 && material[1] >= 15) {
-			material[1] -= 15;
-			beamLevel[right]++;
-			beamLevel[left]++;
-		}
-		if (keys[KEY_INPUT_D] == 1 && oldkeys[KEY_INPUT_D] == 0 && material[2] >= 15) {
-			material[2] -= 15;
-			beamLevel[homing]++;
-		}
-
-		/*モードチェンジ*/
-		if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
-			shotMode++;
-			while (shotMode > 2) { shotMode -= 3; }
-		}
-		if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
-			shotMode--;
-			while (shotMode < 0) { shotMode += 3; }
-		}
-
-		/*射撃*/
-		if (reload > 0) { reload--; }
-		if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
-			while (shot[shotNum] == true) { shotNum++; }
-			switch (shotMode)
+			/*敵移動*/
+			for (int i = 0; i < ENEMYLIMIT; i++)
 			{
-			case 0:
-				/* NormalShot */
-				beamX[shotNum] = x;
-				beamY[shotNum] = y;
-				beamMoveY[shotNum] = -10;
-				shot[shotNum] = true;
-				beamType[shotNum] = normal;
-				power[shotNum++] = 10 + 5 * beamLevel[normal];
-				if (shotNum >= ALLBEAM) { shotNum = 0; }
-				reload = 8;
-				break;
-
-			case 1:
-				/* TwinShot */
-				for (int i = 1; i > -2; i -= 2) {
-					beamX[shotNum] = x;
-					beamY[shotNum] = y;
-					beamMoveX[shotNum] = 2 * i;
-					beamMoveY[shotNum] = -10;
-					shot[shotNum] = true;
-					if (i > 0) { beamType[shotNum] = right; }
-					else { beamType[shotNum] = left; }
-					power[shotNum++] = 6 + 3 * beamLevel[right];
-					if (shotNum >= _countof(shot)) { shotNum = 0; }
-				}
-				reload = 8;
-				break;
-
-			case 2:
-				/* HomingShot */
-				beamX[shotNum] = x;
-				beamY[shotNum] = y;
-				beamMoveX[shotNum] = 0;
-				beamMoveY[shotNum] = 1;
-				shot[shotNum] = true;
-				beamType[shotNum] = homing;
-				power[shotNum] = 20 + 10 * beamLevel[homing];
-				forHoming[shotNum++] = 0;
-				if (shotNum >= _countof(shot)) { shotNum = 0; }
-				reload = 20;
-				break;
-			}
-		}
-
-		/*射撃弾*/
-		for (int i = 0; i < ALLBEAM; i++)
-		{
-			if (shot[i] == true) {
-				switch (beamType[i])
-				{
-				case normal:
-					beamY[i] += beamMoveY[i];
-					break;
-
-				case right:
-				case left:
-					beamX[i] += beamMoveX[i];
-					beamY[i] += beamMoveY[i];
-					break;
-
-				case homing:
-					beamX[i] += beamMoveX[i];
-					beamY[i] += beamMoveY[i];
-					if (forHoming[i] < 100) { forHoming[i]++; }
-					else if (forHoming[i] >= 100 && homingLocked <= ENEMYLIMIT) {
-						float distance = sqrtf(
-							powf(float(enemyX[homingLocked]) - beamX[i], 2.0f) +
-							powf(float(enemyY[homingLocked]) - beamY[i], 2.0f));
-						if (homingLocked != ENEMYLIMIT * 9) {
-							beamMoveX[i] = float(enemyX[homingLocked] - beamX[i]) * 10.0f / distance;
-							beamMoveY[i] = float(enemyY[homingLocked] - beamY[i]) * 10.0f / distance;
-						}
-					}
-					break;
-				}
-				if (beamY[i] <= -beamR || beamY[i] >= areaY + beamR ||
-					beamX[i] <= -beamR || beamX[i] >= areaX + beamR) {
-					shot[i] = false;
-				}
-			}
-		}
-
-		/*衝突判定*/
-		for (int i = 0; i < ALLBEAM; i++)
-		{
-			for (int j = 0; j < ENEMYLIMIT; j++)
-			{
-				if (shot[i] == true && enemyAlive[j] == true &&
-					pow(beamX[i] - enemyX[j], 2.0) + pow(beamY[i] - enemyY[j], 2.0) <= pow(beamR + enemyR, 2.0)) {
-					shot[i] = false;
-					enemyHP[j] -= power[i];
-					if (enemyHP[j] <= 0) {
-						enemyAlive[j] = false;
-						material[enemyType[j]]++;
+				if (enemyAlive[i] == true) {
+					enemyX[i] += enemyMoveX[i];
+					enemyY[i] += enemyMoveY[i];
+					if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
+						enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
+						enemyAlive[i] = false;
 						homingLocked = ENEMYLIMIT * 10;
 						for (int i = 0; i < ENEMYLIMIT; i++)
 						{
@@ -300,100 +183,266 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					}
 				}
 			}
-		}
 
-		/*経過*/
-		playTimer++;
-		while (pattern->SpawnCheck(playTimer) == true)
-		{
-			pattern->Spawn(
-				&enemyType[enemyCount], &enemyHP[enemyCount],
-				&enemyX[enemyCount], &enemyY[enemyCount],
-				&enemyMoveX[enemyCount], &enemyMoveY[enemyCount]);
-			enemyAlive[enemyCount] = true;
-			homingTarget[enemyCount] = enemyCount++;
-			homingLocked = ENEMYLIMIT * 10;
-			for (int i = 0; i < ENEMYLIMIT; i++)
-			{
-				if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
-					homingLocked = homingTarget[i];
+			/*モードチェンジ*/
+			if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
+				shotMode++;
+				while (shotMode > 2) { shotMode -= 3; }
+			}
+			if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
+				shotMode--;
+				while (shotMode < 0) { shotMode += 3; }
+			}
+
+			/*射撃*/
+			if (reload > 0) { reload--; }
+			if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
+				while (shot[shotNum] == true) { shotNum++; }
+				switch (shotMode)
+				{
+				case 0:
+					/* NormalShot */
+					beamX[shotNum] = x;
+					beamY[shotNum] = y;
+					beamMoveY[shotNum] = -10;
+					shot[shotNum] = true;
+					beamType[shotNum] = normal;
+					power[shotNum++] = 5 + 5 * beamLevel[normal];
+					if (shotNum >= ALLBEAM) { shotNum = 0; }
+					reload = 8;
+					break;
+
+				case 1:
+					/* TwinShot */
+					for (int i = 1; i > -2; i -= 2) {
+						beamX[shotNum] = x;
+						beamY[shotNum] = y;
+						beamMoveX[shotNum] = 2 * i;
+						beamMoveY[shotNum] = -10;
+						shot[shotNum] = true;
+						if (i > 0) { beamType[shotNum] = right; }
+						else { beamType[shotNum] = left; }
+						power[shotNum++] = 4 + 4 * beamLevel[right];
+						if (shotNum >= _countof(shot)) { shotNum = 0; }
+					}
+					reload = 8;
+					break;
+
+				case 2:
+					/* HomingShot */
+					beamX[shotNum] = x;
+					beamY[shotNum] = y;
+					beamMoveX[shotNum] = 0;
+					beamMoveY[shotNum] = 1;
+					shot[shotNum] = true;
+					beamType[shotNum] = homing;
+					power[shotNum] = 15 + 15 * beamLevel[homing];
+					forHoming[shotNum++] = 0;
+					if (shotNum >= _countof(shot)) { shotNum = 0; }
+					reload = 20;
+					break;
 				}
 			}
-		}
 
-		mateDigit[0] = 0;
-		digChecker = material[0];
-		while (digChecker != 0)
-		{
-			digChecker /= 10;
-			mateDigit[0]++;
-		}
-		mateDigit[1] = 0;
-		digChecker = material[1];
-		while (digChecker != 0)
-		{
-			digChecker /= 10;
-			mateDigit[1]++;
-		}
-		mateDigit[2] = 0;
-		digChecker = material[2];
-		while (digChecker != 0)
-		{
-			digChecker /= 10;
-			mateDigit[2]++;
+			/*射撃弾*/
+			for (int i = 0; i < ALLBEAM; i++)
+			{
+				if (shot[i] == true) {
+					switch (beamType[i])
+					{
+					case normal:
+						beamY[i] += beamMoveY[i];
+						break;
+
+					case right:
+					case left:
+						beamX[i] += beamMoveX[i];
+						beamY[i] += beamMoveY[i];
+						break;
+
+					case homing:
+						beamX[i] += beamMoveX[i];
+						beamY[i] += beamMoveY[i];
+						if (forHoming[i] < 100) { forHoming[i]++; }
+						else if (forHoming[i] >= 100 && homingLocked <= ENEMYLIMIT) {
+							float distance = sqrtf(
+								powf(float(enemyX[homingLocked]) - beamX[i], 2.0f) +
+								powf(float(enemyY[homingLocked]) - beamY[i], 2.0f));
+							if (homingLocked != ENEMYLIMIT * 9) {
+								beamMoveX[i] = float(enemyX[homingLocked] - beamX[i]) * 10.0f / distance;
+								beamMoveY[i] = float(enemyY[homingLocked] - beamY[i]) * 10.0f / distance;
+							}
+						}
+						break;
+					}
+					if (beamY[i] <= -beamR || beamY[i] >= areaY + beamR ||
+						beamX[i] <= -beamR || beamX[i] >= areaX + beamR) {
+						shot[i] = false;
+					}
+				}
+			}
+
+			/*衝突判定*/
+			for (int i = 0; i < ALLBEAM; i++)
+			{
+				for (int j = 0; j < ENEMYLIMIT; j++)
+				{
+					double powerX = pow(beamX[i] - enemyX[j], 2.0);
+					double powerY = pow(beamY[i] - enemyY[j], 2.0);
+					if (shot[i] == true && enemyAlive[j] == true &&
+						powerX + powerY <= pow(beamR + enemyR, 2.0)) {
+						shot[i] = false;
+						enemyHP[j] -= power[i];
+						if (enemyHP[j] <= 0) {
+							enemyAlive[j] = false;
+							material[enemyType[j]]++;
+							homingLocked = ENEMYLIMIT * 10;
+							for (int i = 0; i < ENEMYLIMIT; i++)
+							{
+								if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+									homingLocked = homingTarget[i];
+								}
+							}
+						}
+					}
+				}
+			}
+
+			/*素材数の表記*/
+			mateDigit[0] = 0;
+			digChecker = material[0];
+			while (digChecker != 0)
+			{
+				digChecker /= 10;
+				mateDigit[0]++;
+			}
+			mateDigit[1] = 0;
+			digChecker = material[1];
+			while (digChecker != 0)
+			{
+				digChecker /= 10;
+				mateDigit[1]++;
+			}
+			mateDigit[2] = 0;
+			digChecker = material[2];
+			while (digChecker != 0)
+			{
+				digChecker /= 10;
+				mateDigit[2]++;
+			}
+
+			/*経過*/
+			playTimer++;
+			while (pattern->SpawnCheck(playTimer) == 1)
+			{
+				pattern->Spawn(
+					&enemyType[enemyCount], &enemyHP[enemyCount],
+					&enemyX[enemyCount], &enemyY[enemyCount],
+					&enemyMoveX[enemyCount], &enemyMoveY[enemyCount]);
+				enemyAlive[enemyCount] = true;
+				homingTarget[enemyCount] = enemyCount++;
+				homingLocked = ENEMYLIMIT * 10;
+				for (int i = 0; i < ENEMYLIMIT; i++)
+				{
+					if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+						homingLocked = homingTarget[i];
+					}
+				}
+			}
+			if (pattern->SpawnCheck(playTimer) == 9999 && homingLocked == ENEMYLIMIT * 10) {
+				afterClear++;
+				if (afterClear >= 180) {
+					scene = mix;
+				}
+			}
+			break;
+
+		case mix:
+			/*火力強化*/
+			if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
+				material[0] -= 15;
+				beamLevel[normal]++;
+			}
+			if (keys[KEY_INPUT_S] == 1 && oldkeys[KEY_INPUT_S] == 0 && material[1] >= 15) {
+				material[1] -= 15;
+				beamLevel[right]++;
+				beamLevel[left]++;
+			}
+			if (keys[KEY_INPUT_D] == 1 && oldkeys[KEY_INPUT_D] == 0 && material[2] >= 15) {
+				material[2] -= 15;
+				beamLevel[homing]++;
+			}
+			break;
+
+		case result:
+			break;
 		}
 
 		// DRAW
-		DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
-		DrawCircle(x + areaLeft, y + areaTop, r, GetColor(128, 128, 255), FALSE);
-		for (int i = 0; i < ENEMYLIMIT; i++)
+		switch (scene)
 		{
-			if (enemyAlive[i] == true) {
-				DrawCircle(enemyX[i] + areaLeft, enemyY[i] + areaTop, enemyR, GetColor(77, 255, 77));
-				DrawGraph(
-					enemyX[i] - sizeEnemyX / 2 + areaLeft,
-					enemyY[i] - sizeEnemyY / 2 + areaTop,
-					graphEnemy01, true);
+		case title:
+			DrawGraph(0, 0, graphTitle, true);
+			break;
+
+		case play:
+			DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
+			DrawCircle(x + areaLeft, y + areaTop, r, GetColor(128, 128, 255), FALSE);
+			for (int i = 0; i < ENEMYLIMIT; i++)
+			{
+				if (enemyAlive[i] == true) {
+					DrawCircle(enemyX[i] + areaLeft, enemyY[i] + areaTop, enemyR, GetColor(77, 255, 77));
+					DrawGraph(
+						enemyX[i] - sizeEnemyX / 2 + areaLeft,
+						enemyY[i] - sizeEnemyY / 2 + areaTop,
+						graphEnemy01, true);
+				}
 			}
-		}
-		for (int i = 0; i < ALLBEAM; i++)
-		{
-			if (shot[i] == true) {
-				DrawCircle(beamX[i] + areaLeft, beamY[i] + areaTop, beamR, GetColor(255, 255, 255));
+			for (int i = 0; i < ALLBEAM; i++)
+			{
+				if (shot[i] == true) {
+					DrawCircle(beamX[i] + areaLeft, beamY[i] + areaTop, beamR, GetColor(255, 255, 255));
+				}
 			}
-		}
-		//DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
-		DrawGraph(0, 0, graphFrame, true);
-		DrawFormatString(0, 700, GetColor(255, 255, 255), "%dx%d_LeftTop:%d", areaX, areaY, areaLeft);
-		for (int i = 0; i < ALLBEAM; i++)
-		{
-			if (shot[i] == true) {
-				DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(255, 255, 255));
+			//DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
+			DrawGraph(0, 0, graphFrame, true);
+			//for (int i = 0; i < ALLBEAM; i++)
+			//{
+			//	if (shot[i] == true) {
+			//		DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(255, 255, 255));
+			//	}
+			//	else {
+			//		DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(0, 0, 0));
+			//	}
+			//}
+			for (int i = 0; i < mateDigit[0]; i++)
+			{
+				DrawExtendGraph(900 - 32 * i, 20, 932 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
 			}
-			else {
-				DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(0, 0, 0));
+			if (mateDigit[0] == 0) {
+				DrawExtendGraph(900, 20, 932, 52, font[0], true);
 			}
-		}
-		for (int i = 0; i < mateDigit[0]; i++)
-		{
-			DrawExtendGraph(900 - 32 * i, 20, 932 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
-		}
-		if (mateDigit[0] == 0) {
-			DrawExtendGraph(900, 20, 932, 52, font[0], true);
-		}
-		for (int i = 0; i < mateDigit[1]; i++)
-		{
-			DrawExtendGraph(1000 - 32 * i, 20, 1032 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
-		}
-		if (mateDigit[1] == 0) {
-			DrawExtendGraph(1000, 20, 1032, 52, font[0], true);
-		}
-		for (int i = 0; i < mateDigit[2]; i++)
-		{
-			DrawExtendGraph(1100 - 32 * i, 20, 1132 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
-		}
-		if (mateDigit[2] == 0) {
-			DrawExtendGraph(1100, 20, 1132, 52, font[0], true);
+			for (int i = 0; i < mateDigit[1]; i++)
+			{
+				DrawExtendGraph(1000 - 32 * i, 20, 1032 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+			}
+			if (mateDigit[1] == 0) {
+				DrawExtendGraph(1000, 20, 1032, 52, font[0], true);
+			}
+			for (int i = 0; i < mateDigit[2]; i++)
+			{
+				DrawExtendGraph(1100 - 32 * i, 20, 1132 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+			}
+			if (mateDigit[2] == 0) {
+				DrawExtendGraph(1100, 20, 1132, 52, font[0], true);
+			}
+			break;
+
+		case mix:
+			break;
+
+		case result:
+			break;
 		}
 		// フリップ（表裏反転）
 		ScreenFlip();
