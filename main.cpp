@@ -76,6 +76,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int digChecker;
 
 	// リソース系変数
+	int graphTitle = LoadGraph("Graphics/title.png");
 	int graphPlayer = LoadGraph("Graphics/player.png");
 	int sizePlayerX;
 	int sizePlayerY;
@@ -88,7 +89,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int font[10];
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
 
+	int bgm01 = LoadSoundMem("Sounds/stage02_a.mp3");	/*一旦の仮置き*/
+	int bgm02 = LoadSoundMem("Sounds/stage02_b.mp3");
 	int bgm03 = LoadSoundMem("Sounds/stage03.mp3");
+	int bgmBoss = LoadSoundMem("Sounds/stageBoss.mp3");
+	int bgmMix = LoadSoundMem("Sounds/mixing.mp3");
 
 	// キーボード入力情報、最新＆前フレーム
 	char keys[256] = {};
@@ -159,6 +164,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 		}
+
 		/*火力強化*/
 		if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
 			material[0] -= 15;
@@ -173,6 +179,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			material[2] -= 15;
 			beamLevel[homing]++;
 		}
+
 		/*モードチェンジ*/
 		if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
 			shotMode++;
@@ -182,6 +189,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			shotMode--;
 			while (shotMode < 0) { shotMode += 3; }
 		}
+
 		/*射撃*/
 		if (reload > 0) { reload--; }
 		if (keys[KEY_INPUT_SPACE] == 1 && reload <= 0) {
@@ -243,10 +251,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					break;
 
 				case right:
-					beamX[i] += beamMoveX[i];
-					beamY[i] += beamMoveY[i];
-					break;
-
 				case left:
 					beamX[i] += beamMoveX[i];
 					beamY[i] += beamMoveY[i];
