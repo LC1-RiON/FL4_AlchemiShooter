@@ -7,7 +7,7 @@
 #define PI	3.14159265359f
 #define PIdiv2	(3.14159265359f / 2.0f)
 
-const char TITLE[] = "タイトル-TITLE";
+const char TITLE[] = "AlchemiShooter";
 
 const int WinX = 1280;
 
@@ -89,6 +89,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	double powerY = 0;
 
 	int recipeY = 0;
+	float moveTime = 0;
 
 	// リソース系変数
 	int graphTitle[4];
@@ -108,9 +109,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int sizeEnemyY;
 	GetGraphSize(graphEnemy01, &sizeEnemyX, &sizeEnemyY);
 	int graphFrame = LoadGraph("Graphics/frame.png");
-	int graphRecipe = LoadGraph("Graphics/recipe_proto.png");
+	int graphRecipe = LoadGraph("Graphics/recipe_proto1.1.png");
+	int graphTrailer = LoadGraph("Graphics/recipe_trailer.png");
 	int font[10];
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
+	int graphMaterial01 = LoadGraph("Graphics/enemy01_material.png");
 
 	int bgm01 = LoadSoundMem("Sounds/stage02_a.mp3");	/*一旦の仮置き*/
 	int bgm02 = LoadSoundMem("Sounds/stage02_b.mp3");
@@ -154,6 +157,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			if (titleFlash >= flashRate * 4) { titleFlash -= (flashRate * 4); }
 			if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
 				scene = play;
+				x = areaX / 2;
+				y = areaY - 100;
+
+				for (int i = 0; i < ENEMYLIMIT; i++)
+				{
+					homingTarget[i] = ENEMYLIMIT;
+					enemyAlive[i] = false;
+				}
+				enemyCount = 0;
+
+				for (int i = 0; i < ALLBEAM; i++) {
+					shot[i] = false;
+				}
+				shotNum = 0;
+				reload = 0;
+
+				for (int i = 0; i < 4; i++)
+				{
+					beamLevel[i] = 1;
+				}
+
+				recipeY = 0;
+				moveTime = 0;
+
+				wave = 1;
+				pattern->Setting(wave);
+				playTimer = 0;
+				afterClear = 0;
 			}
 			break;
 
@@ -386,12 +417,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			if (pattern->SpawnCheck(playTimer) == 9999 && homingLocked == ENEMYLIMIT * 10) {
 				afterClear++;
-				if (afterClear >= 140) {
-					float moveTime = float(afterClear - 140);
+				if (afterClear >= 140 && sceneSwitch == false) {
+					afterClear = 0;
+					sceneSwitch = true;
+				}
+				else if (sceneSwitch == true) {
+					moveTime++;
 					recipeY = sinf(PIdiv2 * (moveTime / 40.0f)) * areaY;
-					if (afterClear >= 180) {
-						afterClear = 180;
+					if (moveTime >= 40) {
+						moveTime = 0;
 						scene = mix;
+						sceneSwitch = false;
 					}
 				}
 			}
@@ -410,9 +446,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					beamLevel[normal]++;
 				}
 			}
-			if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
-				pattern->Setting(2);
-				scene = play;
+			if (sceneSwitch == false && keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
+				sceneSwitch = true;
 				/*大量の初期化処理*/
 				x = areaX / 2;
 				y = areaY - 100;
@@ -424,16 +459,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 				enemyCount = 0;
 
-				playTimer = 0;
-				afterClear = 0;
-
 				for (int i = 0; i < ALLBEAM; i++) {
 					shot[i] = false;
 				}
 				shotNum = 0;
 				reload = 0;
+			}
+			else if (sceneSwitch == true) {
+				if (wave == 2) {
+					scene = title;
+					sceneSwitch = false;
 
-				recipeY = 0;
+					titleFlash = 0;
+				}
+				moveTime++;
+				recipeY = cosf(PIdiv2 * (moveTime / 40.0f)) * areaY;
+				if (moveTime >= 40) {
+					moveTime = 0;
+					pattern->Setting(++wave);
+					scene = play;
+					sceneSwitch = false;
+
+					playTimer = 0;
+					afterClear = 0;
+
+					recipeY = 0;
+				}
 			}
 			//if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
 			//	material[0] -= 15;
@@ -488,6 +539,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			//DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
 			DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
+			if (wave == 2) {
+				DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
+			}
 			DrawGraph(0, 0, graphFrame, true);
 			//for (int i = 0; i < ALLBEAM; i++)
 			//{
@@ -498,59 +552,70 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			//		DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(0, 0, 0));
 			//	}
 			//}
+			DrawGraph(852, 20, graphMaterial01, true);
 			for (int i = 0; i < mateDigit[0]; i++)
 			{
-				DrawExtendGraph(900 - 32 * i, 20, 932 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+				DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 			}
 			if (mateDigit[0] == 0) {
-				DrawExtendGraph(900, 20, 932, 52, font[0], true);
+				DrawExtendGraph(900, 84, 932, 116, font[0], true);
 			}
 			for (int i = 0; i < mateDigit[1]; i++)
 			{
-				DrawExtendGraph(1000 - 32 * i, 20, 1032 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+				DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 			}
 			if (mateDigit[1] == 0) {
-				DrawExtendGraph(1000, 20, 1032, 52, font[0], true);
+				DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
 			}
 			for (int i = 0; i < mateDigit[2]; i++)
 			{
-				DrawExtendGraph(1100 - 32 * i, 20, 1132 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+				DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 			}
 			if (mateDigit[2] == 0) {
-				DrawExtendGraph(1100, 20, 1132, 52, font[0], true);
+				DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
 			}
 			break;
 
 		case mix:
+			for (int i = 0; i < 2; i++)
+			{
+				DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg01[i], true);
+			}
+			if (avoid % 2 == 0) {
+				DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
+			}
+			DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
+			if (wave == 2) {
+				DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
+			}
 			DrawGraph(0, 0, graphFrame, true);
-			DrawGraph(areaLeft, areaTop, graphRecipe, true);
+			DrawGraph(852, 20, graphMaterial01, true);
 			for (int i = 0; i < mateDigit[0]; i++)
 			{
-				DrawExtendGraph(900 - 32 * i, 20, 932 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+				DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 			}
 			if (mateDigit[0] == 0) {
-				DrawExtendGraph(900, 20, 932, 52, font[0], true);
+				DrawExtendGraph(900, 84, 932, 116, font[0], true);
 			}
 			for (int i = 0; i < mateDigit[1]; i++)
 			{
-				DrawExtendGraph(1000 - 32 * i, 20, 1032 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+				DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 			}
 			if (mateDigit[1] == 0) {
-				DrawExtendGraph(1000, 20, 1032, 52, font[0], true);
+				DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
 			}
 			for (int i = 0; i < mateDigit[2]; i++)
 			{
-				DrawExtendGraph(1100 - 32 * i, 20, 1132 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+				DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 			}
 			if (mateDigit[2] == 0) {
-				DrawExtendGraph(1100, 20, 1132, 52, font[0], true);
+				DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
 			}
 			break;
 
 		case result:
 			break;
 		}
-		DrawFormatString(1000, 0, GetColor(255, 255, 255), "time:%d", loopTime);
 		// フリップ（表裏反転）
 		ScreenFlip();
 
