@@ -110,6 +110,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GetGraphSize(graphEnemy01, &sizeEnemyX, &sizeEnemyY);
 	int graphFrame = LoadGraph("Graphics/frame.png");
 	int graphRecipe = LoadGraph("Graphics/recipe_proto1.1.png");
+	int graphCursor = LoadGraph("Graphics/recipe_cursor.png");
 	int graphTrailer = LoadGraph("Graphics/recipe_trailer.png");
 	int font[10];
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
@@ -185,6 +186,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				pattern->Setting(wave);
 				playTimer = 0;
 				afterClear = 0;
+
+				material[0] = 0;
+				material[1] = 0;
+				material[2] = 0;
 			}
 			break;
 
@@ -585,6 +590,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
 			}
 			DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
+			if (sceneSwitch == false) {
+				DrawGraph(areaLeft, areaTop, graphCursor, true);
+			}
 			if (wave == 2) {
 				DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
 			}
