@@ -20,7 +20,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// ゲーム内変数
 	srand(time(NULL));
 
-	int scene = 0;
+	int scene = title;
 
 	// プレイエリア_x650:y700
 	int areaLeft = 100;
@@ -31,6 +31,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int x = areaX / 2;
 	int y = areaY - 100;
 	int r = 20;
+	int life = 5;
 
 	const int ENEMYLIMIT = 100;
 	int enemyX[ENEMYLIMIT] = {};
@@ -56,6 +57,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	int material[3] = {};
 
+	int mateDigit[3] = {};
+	int digChecker;
+
 	const int ALLBEAM = 500;
 	float beamX[ALLBEAM];
 	float beamY[ALLBEAM];
@@ -75,8 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int beamLevel[4] = { 1, 1, 1, 1 };
 	int shotMode = 0;
 
-	int mateDigit[3] = {};
-	int digChecker;
+	int recipeY = areaTop - areaY;
 
 	// リソース系変数
 	int graphTitle = LoadGraph("Graphics/title.png");
@@ -89,6 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int sizeEnemyY;
 	GetGraphSize(graphEnemy01, &sizeEnemyX, &sizeEnemyY);
 	int graphFrame = LoadGraph("Graphics/frame.png");
+	int graphRecipe = LoadGraph("Graphics/recipe_proto.png");
 	int font[10];
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
 
@@ -122,7 +126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK); }
 		else {
 			loopTime++;
-			if (loopTime >= 5175) {
+			if (loopTime >= 3860) {
 				loopTime = 0;
 				PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK);
 			}
@@ -439,11 +443,35 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			break;
 
 		case mix:
+			DrawGraph(0, 0, graphFrame, true);
+			DrawGraph(areaLeft, areaTop, graphRecipe, true);
+			for (int i = 0; i < mateDigit[0]; i++)
+			{
+				DrawExtendGraph(900 - 32 * i, 20, 932 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+			}
+			if (mateDigit[0] == 0) {
+				DrawExtendGraph(900, 20, 932, 52, font[0], true);
+			}
+			for (int i = 0; i < mateDigit[1]; i++)
+			{
+				DrawExtendGraph(1000 - 32 * i, 20, 1032 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+			}
+			if (mateDigit[1] == 0) {
+				DrawExtendGraph(1000, 20, 1032, 52, font[0], true);
+			}
+			for (int i = 0; i < mateDigit[2]; i++)
+			{
+				DrawExtendGraph(1100 - 32 * i, 20, 1132 - 32 * i, 52, font[material[0] / int(pow(10, i)) % 10], true);
+			}
+			if (mateDigit[2] == 0) {
+				DrawExtendGraph(1100, 20, 1132, 52, font[0], true);
+			}
 			break;
 
 		case result:
 			break;
 		}
+		DrawFormatString(1000, 0, GetColor(255, 255, 255), "time:%d", loopTime);
 		// フリップ（表裏反転）
 		ScreenFlip();
 
