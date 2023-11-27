@@ -86,6 +86,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// ƒŠƒ\[ƒXŒn•Ï”
 	int graphTitle = LoadGraph("Graphics/title.png");
+	int graphbg01[2];
+	graphbg01[0] = LoadGraph("Graphics/bg01.png");
+	graphbg01[1] = LoadGraph("Graphics/bg01.png");
+	int bgY = 0;
 	int graphPlayer = LoadGraph("Graphics/player.png");
 	int sizePlayerX;
 	int sizePlayerY;
@@ -364,23 +368,56 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					if (afterClear >= 180) { scene = mix; }
 				}
 			}
+			bgY += 4;
+			if (bgY >= areaY) { bgY -= areaY; }
 			break;
 
 		case mix:
 			/*‰Î—Í‹­‰»*/
-			if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
-				material[0] -= 15;
-				beamLevel[normal]++;
+			if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
+				if (material[0] >= 15) {
+					material[0] -= 15;
+					beamLevel[normal]++;
+				}
 			}
-			if (keys[KEY_INPUT_S] == 1 && oldkeys[KEY_INPUT_S] == 0 && material[1] >= 15) {
-				material[1] -= 15;
-				beamLevel[right]++;
-				beamLevel[left]++;
+			if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
+				pattern->Setting(2);
+				scene = play;
+				/*‘å—Ê‚Ì‰Šú‰»ˆ—*/
+				x = areaX / 2;
+				y = areaY - 100;
+	
+				for (int i = 0; i < ENEMYLIMIT; i++)
+				{
+					homingTarget[i] = ENEMYLIMIT;
+					enemyAlive[i] = false;
+				}
+				int enemyCount = 0;
+
+				playTimer = 0;
+				afterClear = 0;
+
+				for (int i = 0; i < ALLBEAM; i++) {
+					shot[i] = false;
+				}
+				shotNum = 0;
+				reload = 0;
+
+				recipeY = 0;
 			}
-			if (keys[KEY_INPUT_D] == 1 && oldkeys[KEY_INPUT_D] == 0 && material[2] >= 15) {
-				material[2] -= 15;
-				beamLevel[homing]++;
-			}
+			//if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0 && material[0] >= 15) {
+			//	material[0] -= 15;
+			//	beamLevel[normal]++;
+			//}
+			//if (keys[KEY_INPUT_S] == 1 && oldkeys[KEY_INPUT_S] == 0 && material[1] >= 15) {
+			//	material[1] -= 15;
+			//	beamLevel[right]++;
+			//	beamLevel[left]++;
+			//}
+			//if (keys[KEY_INPUT_D] == 1 && oldkeys[KEY_INPUT_D] == 0 && material[2] >= 15) {
+			//	material[2] -= 15;
+			//	beamLevel[homing]++;
+			//}
 			break;
 
 		case result:
@@ -395,6 +432,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			break;
 
 		case play:
+			for (int i = 0; i < 2; i++)
+			{
+				DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg01[i], true);
+			}
 			DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
 			DrawCircle(x + areaLeft, y + areaTop, r, GetColor(128, 128, 255), FALSE);
 			for (int i = 0; i < ENEMYLIMIT; i++)
