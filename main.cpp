@@ -4,6 +4,9 @@
 #include "enumeration.h"
 #include "EnemyPattern.h"
 
+#define PI	3.14159265359f
+#define PIdiv2	(3.14159265359f / 2.0f)
+
 const char TITLE[] = "タイトル-TITLE";
 
 const int WinX = 1280;
@@ -79,7 +82,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int beamLevel[4] = { 1, 1, 1, 1 };
 	int shotMode = 0;
 
-	int recipeY = areaTop - areaY;
+	int recipeY = 0;
 
 	// リソース系変数
 	int graphTitle = LoadGraph("Graphics/title.png");
@@ -126,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK); }
 		else {
 			loopTime++;
-			if (loopTime >= 3860) {
+			if (loopTime >= 3863) {
 				loopTime = 0;
 				PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK);
 			}
@@ -355,8 +358,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 			if (pattern->SpawnCheck(playTimer) == 9999 && homingLocked == ENEMYLIMIT * 10) {
 				afterClear++;
-				if (afterClear >= 180) {
-					scene = mix;
+				if (afterClear >= 140) {
+					float moveTime = float(afterClear - 140);
+					recipeY = sinf(PIdiv2 * (moveTime / 40.0f)) * areaY;
+					if (afterClear >= 180) { scene = mix; }
 				}
 			}
 			break;
@@ -409,6 +414,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				}
 			}
 			//DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
+			DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
 			DrawGraph(0, 0, graphFrame, true);
 			//for (int i = 0; i < ALLBEAM; i++)
 			//{
