@@ -109,6 +109,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int sizeEnemyY;
 	GetGraphSize(graphEnemy01, &sizeEnemyX, &sizeEnemyY);
 	int graphFrame = LoadGraph("Graphics/frame.png");
+	int graphButton = LoadGraph("Graphics/frame_UI.png");
 	int graphRecipe = LoadGraph("Graphics/recipe_proto1.1.png");
 	int graphCursor = LoadGraph("Graphics/recipe_cursor.png");
 	int graphTrailer = LoadGraph("Graphics/recipe_trailer.png");
@@ -156,41 +157,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		case title:
 			titleFlash++;
 			if (titleFlash >= flashRate * 4) { titleFlash -= (flashRate * 4); }
-			if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
-				scene = play;
-				x = areaX / 2;
-				y = areaY - 100;
+			for (int i = 0; i < 256; i++)
+			{
+				if (keys[i] == 1 && oldkeys[i] == 0) {
+					scene = play;
+					x = areaX / 2;
+					y = areaY - 100;
 
-				for (int i = 0; i < ENEMYLIMIT; i++)
-				{
-					homingTarget[i] = ENEMYLIMIT;
-					enemyAlive[i] = false;
+					for (int i = 0; i < ENEMYLIMIT; i++)
+					{
+						homingTarget[i] = ENEMYLIMIT;
+						enemyAlive[i] = false;
+					}
+					enemyCount = 0;
+
+					for (int i = 0; i < ALLBEAM; i++) {
+						shot[i] = false;
+					}
+					shotNum = 0;
+					reload = 0;
+
+					for (int i = 0; i < 4; i++)
+					{
+						beamLevel[i] = 1;
+					}
+
+					recipeY = 0;
+					moveTime = 0;
+
+					wave = 1;
+					pattern->Setting(wave);
+					playTimer = 0;
+					afterClear = 0;
+
+					material[0] = 0;
+					material[1] = 0;
+					material[2] = 0;
+
+					break;
 				}
-				enemyCount = 0;
-
-				for (int i = 0; i < ALLBEAM; i++) {
-					shot[i] = false;
-				}
-				shotNum = 0;
-				reload = 0;
-
-				for (int i = 0; i < 4; i++)
-				{
-					beamLevel[i] = 1;
-				}
-
-				recipeY = 0;
-				moveTime = 0;
-
-				wave = 1;
-				pattern->Setting(wave);
-				playTimer = 0;
-				afterClear = 0;
-
-				material[0] = 0;
-				material[1] = 0;
-				material[2] = 0;
 			}
+			//if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
+			//}
 			break;
 
 		case play:
@@ -548,6 +556,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
 			}
 			DrawGraph(0, 0, graphFrame, true);
+			DrawGraph(0, 0, graphButton, true);
 			//for (int i = 0; i < ALLBEAM; i++)
 			//{
 			//	if (shot[i] == true) {
@@ -597,6 +606,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
 			}
 			DrawGraph(0, 0, graphFrame, true);
+			DrawGraph(0, 0, graphButton, true);
 			DrawGraph(852, 20, graphMaterial01, true);
 			for (int i = 0; i < mateDigit[0]; i++)
 			{
