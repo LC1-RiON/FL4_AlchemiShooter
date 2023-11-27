@@ -24,6 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	srand(time(NULL));
 
 	int scene = title;
+	bool sceneSwitch = false;
 
 	// プレイエリア_x650:y700
 	int areaLeft = 100;
@@ -35,6 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int y = areaY - 100;
 	int r = 20;
 	int life = 5;
+	int avoid = 0;
 
 	const int ENEMYLIMIT = 100;
 	int enemyX[ENEMYLIMIT] = {};
@@ -54,7 +56,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int enemyCount = 0;
 
 	EnemyPattern* pattern = new EnemyPattern();
-	pattern->Setting(1);
+	int wave = 1;
+	pattern->Setting(wave);
 	int playTimer = 0;
 	int afterClear = 0;
 
@@ -82,10 +85,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int beamLevel[4] = { 1, 1, 1, 1 };
 	int shotMode = 0;
 
+	double powerX = 0;
+	double powerY = 0;
+
 	int recipeY = 0;
 
 	// リソース系変数
-	int graphTitle = LoadGraph("Graphics/title.png");
+	int graphTitle[4];
+	LoadDivGraph("Graphics/title.png", 4, 4, 1, WinX, WinY, graphTitle);
+	int titleFlash = 0;
+	const int flashRate = 40;
 	int graphbg01[2];
 	graphbg01[0] = LoadGraph("Graphics/bg01.png");
 	graphbg01[1] = LoadGraph("Graphics/bg01.png");
@@ -141,7 +150,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		switch (scene)
 		{
 		case title:
-			if (keys[KEY_INPUT_RETURN] == 1 && oldkeys[KEY_INPUT_RETURN] == 0) {
+			titleFlash++;
+			if (titleFlash >= flashRate * 4) { titleFlash -= (flashRate * 4); }
+			if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
 				scene = play;
 			}
 			break;
@@ -152,18 +163,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				x += 4;
 				if (x > areaX) {
 					x = areaX;
-					//if (oldkeys[KEY_INPUT_RIGHT] == 0) {
-					//	x = 0;
-					//}
+					//if (oldkeys[KEY_INPUT_RIGHT] == 0) { x = 0; }
 				}
 			}
 			if (keys[KEY_INPUT_LEFT] == 1) {
 				x -= 4;
 				if (x < 0) {
 					x = 0;
-					//if (oldkeys[KEY_INPUT_LEFT] == 0) {
-					//	x = areaX;
-					//}
+					//if (oldkeys[KEY_INPUT_LEFT] == 0) { x = areaX; }
 				}
 			}
 			if (keys[KEY_INPUT_DOWN] == 1) {
@@ -196,14 +203,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 
 			/*モードチェンジ*/
-			if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
-				shotMode++;
-				while (shotMode > 2) { shotMode -= 3; }
-			}
-			if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
-				shotMode--;
-				while (shotMode < 0) { shotMode += 3; }
-			}
+			//if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
+			//	shotMode++;
+			//	while (shotMode > 2) { shotMode -= 3; }
+			//}
+			//if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
+			//	shotMode--;
+			//	while (shotMode < 0) { shotMode += 3; }
+			//}
 
 			/*射撃*/
 			if (reload > 0) { reload--; }
@@ -294,25 +301,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 
 			/*衝突判定*/
-			for (int i = 0; i < ALLBEAM; i++)
+			for (int j = 0; j < ENEMYLIMIT; j++)
 			{
-				for (int j = 0; j < ENEMYLIMIT; j++)
-				{
-					double powerX = pow(beamX[i] - enemyX[j], 2.0);
-					double powerY = pow(beamY[i] - enemyY[j], 2.0);
-					if (shot[i] == true && enemyAlive[j] == true &&
-						powerX + powerY <= pow(beamR + enemyR, 2.0)) {
-						shot[i] = false;
-						enemyHP[j] -= power[i];
-						if (enemyHP[j] <= 0) {
-							enemyAlive[j] = false;
-							material[enemyType[j]]++;
-							homingLocked = ENEMYLIMIT * 10;
-							for (int i = 0; i < ENEMYLIMIT; i++)
-							{
-								if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
-									homingLocked = homingTarget[i];
+				if (enemyAlive[j] == true) {
+					for (int i = 0; i < ALLBEAM; i++)
+					{
+						powerX = pow(beamX[i] - enemyX[j], 2.0);
+						powerY = pow(beamY[i] - enemyY[j], 2.0);
+						/*エネミー-ビーム間衝突*/
+						if (shot[i] == true && powerX + powerY <= pow(beamR + enemyR, 2.0)) {
+							shot[i] = false;
+							enemyHP[j] -= power[i];
+							if (enemyHP[j] <= 0) {
+								enemyAlive[j] = false;
+								material[enemyType[j]]++;
+								homingLocked = ENEMYLIMIT * 10;
+								for (int i = 0; i < ENEMYLIMIT; i++)
+								{
+									if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+										homingLocked = homingTarget[i];
+									}
 								}
+							}
+						}
+					}
+					powerX = pow(x - enemyX[j], 2.0);
+					powerY = pow(y - enemyY[j], 2.0);
+					/*エネミー-プレイヤー間衝突*/
+					if (avoid <= 0 && powerX + powerY <= pow(r + enemyR, 2.0)) {
+						avoid = 180;
+						//life--;
+						enemyAlive[j] = false;
+						homingLocked = ENEMYLIMIT * 10;
+						for (int i = 0; i < ENEMYLIMIT; i++)
+						{
+							if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+								homingLocked = homingTarget[i];
 							}
 						}
 					}
@@ -365,14 +389,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (afterClear >= 140) {
 					float moveTime = float(afterClear - 140);
 					recipeY = sinf(PIdiv2 * (moveTime / 40.0f)) * areaY;
-					if (afterClear >= 180) { scene = mix; }
+					if (afterClear >= 180) {
+						afterClear = 180;
+						scene = mix;
+					}
 				}
 			}
+			if (avoid > 0) { avoid--; }
 			bgY += 4;
 			if (bgY >= areaY) { bgY -= areaY; }
 			break;
 
 		case mix:
+			bgY += 4;
+			if (bgY >= areaY) { bgY -= areaY; }
 			/*火力強化*/
 			if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
 				if (material[0] >= 15) {
@@ -386,13 +416,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				/*大量の初期化処理*/
 				x = areaX / 2;
 				y = areaY - 100;
-	
+
 				for (int i = 0; i < ENEMYLIMIT; i++)
 				{
 					homingTarget[i] = ENEMYLIMIT;
 					enemyAlive[i] = false;
 				}
-				int enemyCount = 0;
+				enemyCount = 0;
 
 				playTimer = 0;
 				afterClear = 0;
@@ -428,7 +458,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		switch (scene)
 		{
 		case title:
-			DrawGraph(0, 0, graphTitle, true);
+			DrawGraph(0, 0, graphTitle[titleFlash / flashRate], true);
 			break;
 
 		case play:
@@ -436,12 +466,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			{
 				DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg01[i], true);
 			}
-			DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
+			if (avoid % 2 == 0) {
+				DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
+			}
 			DrawCircle(x + areaLeft, y + areaTop, r, GetColor(128, 128, 255), FALSE);
 			for (int i = 0; i < ENEMYLIMIT; i++)
 			{
 				if (enemyAlive[i] == true) {
-					DrawCircle(enemyX[i] + areaLeft, enemyY[i] + areaTop, enemyR, GetColor(77, 255, 77));
+					DrawCircle(enemyX[i] + areaLeft, enemyY[i] + areaTop, enemyR, GetColor(179, 207, 255));
 					DrawGraph(
 						enemyX[i] - sizeEnemyX / 2 + areaLeft,
 						enemyY[i] - sizeEnemyY / 2 + areaTop,
