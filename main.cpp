@@ -35,6 +35,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int x = areaX / 2;
 	int y = areaY - 100;
 	int r = 20;
+	int speed = 4;
 	int life = 5;
 	int avoid = 0;
 
@@ -204,25 +205,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		case play:
 			/*Ž©‹@ˆÚ“®*/
 			if (keys[KEY_INPUT_RIGHT] == 1) {
-				x += 4;
+				x += speed;
+				if(keys[KEY_INPUT_LSHIFT] == 0 && keys[KEY_INPUT_RSHIFT] == 0){ x += speed; }
 				if (x > areaX) {
 					x = areaX;
 					//if (oldkeys[KEY_INPUT_RIGHT] == 0) { x = 0; }
 				}
 			}
 			if (keys[KEY_INPUT_LEFT] == 1) {
-				x -= 4;
+				x -= speed;
+				if (keys[KEY_INPUT_LSHIFT] == 0 && keys[KEY_INPUT_RSHIFT] == 0){ x -= speed; }
 				if (x < 0) {
 					x = 0;
 					//if (oldkeys[KEY_INPUT_LEFT] == 0) { x = areaX; }
 				}
 			}
 			if (keys[KEY_INPUT_DOWN] == 1) {
-				y += 4;
+				y += speed;
+				if (keys[KEY_INPUT_LSHIFT] == 0 && keys[KEY_INPUT_RSHIFT] == 0) { y += speed; }
 				if (y > areaY) { y = areaY; }
 			}
 			if (keys[KEY_INPUT_UP] == 1) {
-				y -= 4;
+				y -= speed;
+				if (keys[KEY_INPUT_LSHIFT] == 0 && keys[KEY_INPUT_RSHIFT] == 0) { y -= speed; }
 				if (y < 0) { y = 0; }
 			}
 
