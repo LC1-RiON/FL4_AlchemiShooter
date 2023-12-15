@@ -124,6 +124,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int bgmBoss = LoadSoundMem("Sounds/stageBoss.mp3");
 	int bgmMix = LoadSoundMem("Sounds/mixing.mp3");		/*ループカウント=5175*/
 	int loopTime = 0;
+	int soundWarp = LoadSoundMem("Sounds/warp.mp3");
+	int soundShot = LoadSoundMem("Sounds/shot.mp3");
 
 	// キーボード入力情報、最新＆前フレーム
 	char keys[256] = {};
@@ -209,7 +211,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if(keys[KEY_INPUT_LSHIFT] == 0 && keys[KEY_INPUT_RSHIFT] == 0){ x += speed; }
 				if (x > areaX) {
 					x = areaX;
-					//if (oldkeys[KEY_INPUT_RIGHT] == 0) { x = 0; }
+					//if (oldkeys[KEY_INPUT_RIGHT] == 0) {
+					//	x = 0;
+					//	PlaySoundMem(soundWarp, DX_PLAYTYPE_BACK);
+					//}
 				}
 			}
 			if (keys[KEY_INPUT_LEFT] == 1) {
@@ -217,7 +222,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				if (keys[KEY_INPUT_LSHIFT] == 0 && keys[KEY_INPUT_RSHIFT] == 0){ x -= speed; }
 				if (x < 0) {
 					x = 0;
-					//if (oldkeys[KEY_INPUT_LEFT] == 0) { x = areaX; }
+					//if (oldkeys[KEY_INPUT_LEFT] == 0) {
+					//	x = areaX;
+					//	PlaySoundMem(soundWarp, DX_PLAYTYPE_BACK);
+					//}
 				}
 			}
 			if (keys[KEY_INPUT_DOWN] == 1) {
@@ -277,6 +285,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					power[shotNum++] = 5 + 5 * beamLevel[normal];
 					if (shotNum >= ALLBEAM) { shotNum = 0; }
 					reload = 8;
+					PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
 					break;
 
 				case 1:
@@ -293,6 +302,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 						if (shotNum >= _countof(shot)) { shotNum = 0; }
 					}
 					reload = 8;
+					PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
 					break;
 
 				case 2:
@@ -307,6 +317,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 					forHoming[shotNum++] = 0;
 					if (shotNum >= _countof(shot)) { shotNum = 0; }
 					reload = 20;
+					PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
 					break;
 				}
 			}
