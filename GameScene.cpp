@@ -1,4 +1,5 @@
 #include "GameScene.h"
+#include "Collision.h"
 #include <math.h>
 
 #define PIdiv2	(3.14159265359f / 2.0f)
@@ -29,10 +30,9 @@ GameScene::GameScene()
 		shot[i] = false;
 	}
 
-	for (int i = 0; i < 4; i++)
-	{
-		beamLevel[i] = 1;
-	}
+	beamLevel[0] = 1;
+	beamLevel[1] = 0;
+	beamLevel[2] = 0;
 
 	recipeY = 0;
 	moveTime = 0;
@@ -40,9 +40,6 @@ GameScene::GameScene()
 	wave = 1;
 	playTimer = 0;
 	afterClear = 0;
-
-	powerX = 0;
-	powerY = 0;
 
 	sceneSwitch = false;
 
@@ -56,8 +53,12 @@ GameScene::GameScene()
 	graphbg01[1] = LoadGraph("Graphics/bg01.png");
 	graphPlayer = LoadGraph("Graphics/player.png");
 	GetGraphSize(graphPlayer, &sizePlayerX, &sizePlayerY);
-	graphEnemy01 = LoadGraph("Graphics/enemy01.png");
-	GetGraphSize(graphEnemy01, &sizeEnemyX, &sizeEnemyY);
+	graphEnemy[0] = LoadGraph("Graphics/enemy01.png");
+	graphEnemy[1] = LoadGraph("Graphics/enemy02.png");
+	graphEnemy[2] = LoadGraph("Graphics/enemy03.png");
+	GetGraphSize(graphEnemy[0], &sizeEnemyX[0], &sizeEnemyY[0]);
+	GetGraphSize(graphEnemy[1], &sizeEnemyX[1], &sizeEnemyY[1]);
+	GetGraphSize(graphEnemy[2], &sizeEnemyX[2], &sizeEnemyY[2]);
 	graphFrame = LoadGraph("Graphics/frame.png");
 	graphButton = LoadGraph("Graphics/frame_UI.png");
 	graphRecipe = LoadGraph("Graphics/recipe_proto1.1.png");
@@ -98,13 +99,13 @@ void GameScene::FirstInit()
 	recipeY = 0;
 	moveTime = 0;
 
-	pattern->Setting(wave);
 	playTimer = 0;
 	afterClear = 0;
 }
 
 void GameScene::Initialize(DataManager* dataManager)
 {
+	wave++;
 	FirstInit();
 
 	dataManager->GiveData(
@@ -112,16 +113,6 @@ void GameScene::Initialize(DataManager* dataManager)
 		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3], recipeY,
 		mateDigit[0], mateDigit[1], mateDigit[2]);
 }
-//void GameScene::Initialize(MixScene* mixScene)
-//{
-//	FirstInit();
-//
-//	mixScene->GiveData(
-//		bgY, material[0], material[1], material[2],
-//		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3], recipeY,
-//		mateDigit[0], mateDigit[1], mateDigit[2]
-//	);
-//}
 
 int GameScene::Update(char* keys, char* oldkeys)
 {
@@ -165,6 +156,33 @@ int GameScene::Update(char* keys, char* oldkeys)
 		if (enemyAlive[i] == true) {
 			enemyX[i] += enemyMoveX[i];
 			enemyY[i] += enemyMoveY[i];
+			enemyMoveTime[i]++;
+			// 獣種の横ステップ
+			if (enemyType[i] == beast && enemyMoveX[i] == 0 && enemyMoveTime[i] >= 60) {
+				enemyMoveTime[i] = 0;
+				if (powf(float(x) - float(enemyX[i]), 2.0f) <= 225.0f) {
+					enemyMoveY[i] = 3;
+					if (enemyX[i] * 2 > areaX) {
+						enemyMoveX[i] = -4;
+					}
+					else {
+						enemyMoveX[i] = 4;
+					}
+				}
+				else if (enemyX[i] > x) {
+					enemyMoveX[i] = -2;
+					enemyMoveY[i] = -3;
+				}
+				else {
+					enemyMoveX[i] = 2;
+					enemyMoveY[i] = -3;
+				}
+			}
+			else if (enemyType[i] == beast && enemyMoveX[i] != 0 && enemyMoveTime[i] >= 30) {
+				enemyMoveTime[i] = 0;
+				enemyMoveX[i] = 0;
+				enemyMoveY[i] = 2;
+			}
 			if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
 				enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
 				enemyAlive[i] = false;
@@ -180,14 +198,14 @@ int GameScene::Update(char* keys, char* oldkeys)
 	}
 
 	/*モードチェンジ*/
-	//if (keys[KEY_INPUT_X] == 1 && oldkeys[KEY_INPUT_X] == 0) {
-	//	shotMode++;
-	//	while (shotMode > 2) { shotMode -= 3; }
-	//}
-	//if (keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
-	//	shotMode--;
-	//	while (shotMode < 0) { shotMode += 3; }
-	//}
+	if (keys[KEY_INPUT_A] == 1 && oldkeys[KEY_INPUT_A] == 0) {
+		shotMode++;
+		while (shotMode > 2) { shotMode -= 3; }
+		while (beamLevel[shotMode] == 0) {
+			shotMode++;
+			while (shotMode > 2) { shotMode -= 3; }
+		}
+	}
 
 	/*射撃*/
 	if (reload > 0) { reload--; }
@@ -195,7 +213,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 		while (shot[shotNum] == true) { shotNum++; }
 		switch (shotMode)
 		{
-		case 0:
+		case normal:
 			/* NormalShot */
 			beamX[shotNum] = float(x);
 			beamY[shotNum] = float(y);
@@ -208,7 +226,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 			PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
 			break;
 
-		case 1:
+		case twin:
 			/* TwinShot */
 			for (int i = 1; i > -2; i -= 2) {
 				beamX[shotNum] = float(x);
@@ -216,16 +234,15 @@ int GameScene::Update(char* keys, char* oldkeys)
 				beamMoveX[shotNum] = float(2 * i);
 				beamMoveY[shotNum] = -10;
 				shot[shotNum] = true;
-				if (i > 0) { beamType[shotNum] = right; }
-				else { beamType[shotNum] = left; }
-				power[shotNum++] = 4 + 4 * beamLevel[right];
+				beamType[shotNum] = twin;
+				power[shotNum++] = 4 + 4 * beamLevel[twin];
 				if (shotNum >= _countof(shot)) { shotNum = 0; }
 			}
 			reload = 8;
 			PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
 			break;
 
-		case 2:
+		case homing:
 			/* HomingShot */
 			beamX[shotNum] = float(x);
 			beamY[shotNum] = float(y);
@@ -252,8 +269,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 				beamY[i] += beamMoveY[i];
 				break;
 
-			case right:
-			case left:
+			case twin:
 				beamX[i] += beamMoveX[i];
 				beamY[i] += beamMoveY[i];
 				break;
@@ -286,10 +302,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 		if (enemyAlive[j] == true) {
 			for (int i = 0; i < ALLBEAM; i++)
 			{
-				powerX = pow(beamX[i] - enemyX[j], 2.0);
-				powerY = pow(beamY[i] - enemyY[j], 2.0);
 				/*エネミー-ビーム間衝突*/
-				if (shot[i] == true && powerX + powerY <= pow(beamR + enemyR, 2.0)) {
+				if (shot[i] == true &&
+					Collision::HitCheck(beamX[i], beamY[i], beamR, enemyX[j], enemyY[j], enemyR) == true) {
 					shot[i] = false;
 					enemyHP[j] -= power[i];
 					if (enemyHP[j] <= 0) {
@@ -305,10 +320,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 					}
 				}
 			}
-			powerX = pow(x - enemyX[j], 2.0);
-			powerY = pow(y - enemyY[j], 2.0);
 			/*エネミー-プレイヤー間衝突*/
-			if (avoid <= 0 && powerX + powerY <= pow(r + enemyR, 2.0)) {
+			if (avoid <= 0 &&
+				Collision::HitCheck(x, y, r, enemyX[j], enemyY[j], enemyR) == true) {
 				avoid = 180;
 				//life--;
 				enemyAlive[j] = false;
@@ -355,6 +369,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 			&enemyX[enemyCount], &enemyY[enemyCount],
 			&enemyMoveX[enemyCount], &enemyMoveY[enemyCount]);
 		enemyAlive[enemyCount] = true;
+		enemyMoveTime[enemyCount] = 0;
 		homingTarget[enemyCount] = enemyCount++;
 		homingLocked = ENEMYLIMIT * 10;
 		for (int i = 0; i < ENEMYLIMIT; i++)
@@ -402,10 +417,29 @@ void GameScene::Draw()
 	{
 		if (enemyAlive[i] == true) {
 			DrawCircle(enemyX[i] + areaLeft, enemyY[i] + areaTop, enemyR, GetColor(179, 207, 255));
-			DrawGraph(
-				enemyX[i] - sizeEnemyX / 2 + areaLeft,
-				enemyY[i] - sizeEnemyY / 2 + areaTop,
-				graphEnemy01, true);
+			switch (enemyType[i])
+			{
+			case slime:
+				DrawGraph(
+					enemyX[i] - sizeEnemyX[slime] / 2 + areaLeft,
+					enemyY[i] - sizeEnemyY[slime] / 2 + areaTop,
+					graphEnemy[slime], true);
+				break;
+
+			case beast:
+				DrawGraph(
+					enemyX[i] - sizeEnemyX[beast] / 2 + areaLeft,
+					enemyY[i] - sizeEnemyY[beast] / 2 + areaTop,
+					graphEnemy[beast], true);
+				break;
+
+			case fairy:
+				DrawGraph(
+					enemyX[i] - sizeEnemyX[fairy] / 2 + areaLeft,
+					enemyY[i] - sizeEnemyY[fairy] / 2 + areaTop,
+					graphEnemy[fairy], true);
+				break;
+			}
 		}
 	}
 	for (int i = 0; i < ALLBEAM; i++)
@@ -414,11 +448,7 @@ void GameScene::Draw()
 			DrawCircle(int(beamX[i]) + areaLeft, int(beamY[i]) + areaTop, beamR, GetColor(255, 255, 255));
 		}
 	}
-	//DrawBox(areaLeft, areaTop, areaLeft + areaX, areaTop + areaY, GetColor(128, 255, 128), FALSE);
 	DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
-	if (wave == 2) {
-		DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
-	}
 	DrawGraph(0, 0, graphFrame, true);
 	DrawGraph(0, 0, graphButton, true);
 	//for (int i = 0; i < ALLBEAM; i++)
@@ -464,7 +494,7 @@ void GameScene::DataSave(DataManager* dataManager)
 
 void GameScene::GiveData(
 	int& bgY_g, int& material01, int& material02, int& material03,
-	int& beamLevel01, int& beamLevel02, int& beamLevel03, int& beamLevel04, int& recipeY_g,
+	int& beamLevel01, int& beamLevel02, int& beamLevel03, int& recipeY_g,
 	int& mateDigit01, int& mateDigit02, int& mateDigit03
 )
 {
@@ -476,7 +506,6 @@ void GameScene::GiveData(
 		beamLevel01 = beamLevel[0];
 		beamLevel02 = beamLevel[1];
 		beamLevel03 = beamLevel[2];
-		beamLevel04 = beamLevel[3];
 		recipeY_g = recipeY;
 		mateDigit01 = mateDigit[0];
 		mateDigit02 = mateDigit[1];

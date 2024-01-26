@@ -1,6 +1,5 @@
 #pragma once
 #include "DxLib.h"
-//#include "MixScene.h"
 #include "DataManager.h"
 #include "EnemyPattern.h"
 class GameScene
@@ -27,6 +26,7 @@ private:
 	int enemyY[ENEMYLIMIT] = {};
 	int enemyMoveX[ENEMYLIMIT] = {};
 	int enemyMoveY[ENEMYLIMIT] = {};
+	int enemyMoveTime[ENEMYLIMIT] = {};
 	int enemyType[ENEMYLIMIT] = {};
 	int enemyHP[ENEMYLIMIT] = {};
 	int homingTarget[ENEMYLIMIT] = {};
@@ -46,7 +46,7 @@ private:
 	int homingLocked;
 	int shotNum;
 	int reload;
-	int beamLevel[4] = {};
+	int beamLevel[3] = {};
 	int shotMode;
 
 	int recipeY;
@@ -57,9 +57,6 @@ private:
 	int afterClear;
 
 	int material[3] = {};
-
-	double powerX;
-	double powerY;
 
 	int mateDigit[3] = {};
 	int digChecker;
@@ -72,9 +69,9 @@ private:
 	int graphPlayer;
 	int sizePlayerX;
 	int sizePlayerY;
-	int graphEnemy01;
-	int sizeEnemyX;
-	int sizeEnemyY;
+	int graphEnemy[3];
+	int sizeEnemyX[3];
+	int sizeEnemyY[3];
 	int graphFrame;
 	int graphButton;
 	int graphRecipe;
@@ -93,7 +90,6 @@ public:
 	void FirstInit();
 
 	void Initialize(DataManager* dataManager);
-	//void Initialize(MixScene* mixScene);
 
 	int Update(char* keys, char* oldkeys);
 
@@ -103,7 +99,7 @@ public:
 
 	void GiveData(
 		int& bgY_g, int& material01, int& material02, int& material03,
-		int& beamLevel01, int& beamLevel02, int& beamLevel03, int& beamLevel04, int& recipeY_g,
+		int& beamLevel01, int& beamLevel02, int& beamLevel03, int& recipeY_g,
 		int& mateDigit01, int& mateDigit02, int& mateDigit03
 	);
 };

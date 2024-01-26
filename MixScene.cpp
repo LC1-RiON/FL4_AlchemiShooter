@@ -43,15 +43,6 @@ void MixScene::Initialize(DataManager* dataManager)
 		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3], recipeY,
 		mateDigit[0], mateDigit[1], mateDigit[2]);
 }
-//void MixScene::Initialize(GameScene* gameScene)
-//{
-//	FirstInit();
-//
-//	gameScene->GiveData(
-//		bgY, material[0], material[1], material[2],
-//		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3], recipeY,
-//		mateDigit[0], mateDigit[1], mateDigit[2]);
-//}
 
 int MixScene::Update(char* keys, char* oldkeys)
 {
@@ -66,33 +57,13 @@ int MixScene::Update(char* keys, char* oldkeys)
 	}
 	if (sceneSwitch == false && keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
 		sceneSwitch = true;
-		///*ëÂó ÇÃèâä˙âªèàóù*/
-		//x = areaX / 2;
-		//y = areaY - 100;
-
-		//for (int i = 0; i < ENEMYLIMIT; i++)
-		//{
-		//	homingTarget[i] = ENEMYLIMIT;
-		//	enemyAlive[i] = false;
-		//}
-		//enemyCount = 0;
-
-		//for (int i = 0; i < ALLBEAM; i++) {
-		//	shot[i] = false;
-		//}
-		//shotNum = 0;
-		//reload = 0;
 	}
 	else if (sceneSwitch == true) {
 		moveTime++;
 		recipeY = cosf(PIdiv2 * (moveTime / 40.0f)) * areaY;
 		if (moveTime >= 40) {
 			moveTime = 0;
-			//pattern->Setting(++wave);
 			sceneSwitch = false;
-
-			//playTimer = 0;
-			//afterClear = 0;
 
 			recipeY = 0;
 
@@ -127,9 +98,6 @@ void MixScene::Draw()
 	if (sceneSwitch == false) {
 		DrawGraph(areaLeft, areaTop, graphCursor, true);
 	}
-	//if (wave == 2) {
-	//	DrawGraph(areaLeft, recipeY + areaTop - areaY, graphTrailer, true);
-	//}
 	DrawGraph(0, 0, graphFrame, true);
 	DrawGraph(0, 0, graphButton, true);
 	DrawGraph(852, 20, graphMaterial01, true);

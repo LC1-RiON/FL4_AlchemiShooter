@@ -4,9 +4,9 @@ enum Scene {
 };
 
 enum BeamType {
-	normal, right, left, homing
+	normal, twin, homing
 };
 
 enum EnemyType {
-	slime, wolf, fairy
+	slime, beast, fairy
 };
