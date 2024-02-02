@@ -158,10 +158,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 			enemyY[i] += enemyMoveY[i];
 			enemyMoveTime[i]++;
 			// 獣種の横ステップ
-			if (enemyType[i] == beast && enemyMoveX[i] == 0 && enemyMoveTime[i] >= 60) {
+			if (enemyType[i] == beast && enemyMoveX[i] == 0 && enemyMoveTime[i] >= 40) {
 				enemyMoveTime[i] = 0;
 				if (powf(float(x) - float(enemyX[i]), 2.0f) <= 225.0f) {
-					enemyMoveY[i] = 3;
 					if (enemyX[i] * 2 > areaX) {
 						enemyMoveX[i] = -4;
 					}
@@ -171,11 +170,11 @@ int GameScene::Update(char* keys, char* oldkeys)
 				}
 				else if (enemyX[i] > x) {
 					enemyMoveX[i] = -2;
-					enemyMoveY[i] = -3;
+					enemyMoveY[i] = -2;
 				}
 				else {
 					enemyMoveX[i] = 2;
-					enemyMoveY[i] = -3;
+					enemyMoveY[i] = -2;
 				}
 			}
 			else if (enemyType[i] == beast && enemyMoveX[i] != 0 && enemyMoveTime[i] >= 30) {
