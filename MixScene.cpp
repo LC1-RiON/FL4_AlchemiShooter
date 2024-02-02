@@ -21,8 +21,12 @@ MixScene::MixScene()
 	graphCursor = LoadGraph("Graphics/recipe_cursor.png");
 	graphFrame = LoadGraph("Graphics/frame.png");
 	graphButton = LoadGraph("Graphics/frame_UI.png");
-	graphMaterial01 = LoadGraph("Graphics/enemy01_material.png");
+	graphMaterial[0] = LoadGraph("Graphics/enemy01_material.png");
+	graphMaterial[1] = LoadGraph("Graphics/enemy02_material.png");
+	graphMaterial[2] = LoadGraph("Graphics/enemy03_material.png");
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
+	bgmMix = LoadSoundMem("Sounds/mixing.mp3");
+	volume = 255;
 }
 
 MixScene::~MixScene()
@@ -32,6 +36,7 @@ MixScene::~MixScene()
 void MixScene::FirstInit()
 {
 	sceneSwitch = false;
+	volume = 255;
 }
 
 void MixScene::Initialize(DataManager* dataManager)
@@ -46,6 +51,7 @@ void MixScene::Initialize(DataManager* dataManager)
 
 int MixScene::Update(char* keys, char* oldkeys)
 {
+	if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK); }
 	bgY += 4;
 	if (bgY >= areaY) { bgY -= areaY; }
 	/*‰Î—Í‹­‰»*/
@@ -59,6 +65,9 @@ int MixScene::Update(char* keys, char* oldkeys)
 		sceneSwitch = true;
 	}
 	else if (sceneSwitch == true) {
+		if (volume > 0) { volume -= 7; }
+		else if (volume < 0) { volume = 0; }
+		ChangeVolumeSoundMem(volume, bgmMix);
 		moveTime++;
 		recipeY = cosf(PIdiv2 * (moveTime / 40.0f)) * areaY;
 		if (moveTime >= 40) {
@@ -100,7 +109,9 @@ void MixScene::Draw()
 	}
 	DrawGraph(0, 0, graphFrame, true);
 	DrawGraph(0, 0, graphButton, true);
-	DrawGraph(852, 20, graphMaterial01, true);
+	DrawGraph(852, 20, graphMaterial[0], true);
+	DrawGraph(952, 20, graphMaterial[1], true);
+	DrawGraph(1052, 20, graphMaterial[2], true);
 	for (int i = 0; i < mateDigit[0]; i++)
 	{
 		DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);

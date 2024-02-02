@@ -32,8 +32,10 @@ private:
 	int graphCursor;
 	int graphFrame;
 	int graphButton;
-	int graphMaterial01;
+	int graphMaterial[3];
 	int font[10];
+	int bgmMix;
+	int volume;
 
 public:
 	MixScene();

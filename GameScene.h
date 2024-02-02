@@ -78,9 +78,11 @@ private:
 	int graphCursor;
 	int graphTrailer;
 	int font[10];
-	int graphMaterial01;
+	int graphMaterial[3];
 
-	int soundShot;
+	int bgm[4];
+	int volume;
+	int soundShot[3];
 
 public:
 	GameScene();

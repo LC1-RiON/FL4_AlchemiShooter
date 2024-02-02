@@ -65,9 +65,18 @@ GameScene::GameScene()
 	graphCursor = LoadGraph("Graphics/recipe_cursor.png");
 	graphTrailer = LoadGraph("Graphics/recipe_trailer.png");
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
-	graphMaterial01 = LoadGraph("Graphics/enemy01_material.png");
+	graphMaterial[0] = LoadGraph("Graphics/enemy01_material.png");
+	graphMaterial[1] = LoadGraph("Graphics/enemy02_material.png");
+	graphMaterial[2] = LoadGraph("Graphics/enemy03_material.png");
 
-	soundShot = LoadSoundMem("Sounds/shot.mp3");
+	bgm[0] = LoadSoundMem("Sounds/stage01.mp3");
+	bgm[1] = LoadSoundMem("Sounds/stage02.mp3");
+	bgm[2] = LoadSoundMem("Sounds/stage03.mp3");
+	bgm[3] = LoadSoundMem("Sounds/stageBoss.mp3");
+	volume = 255;
+	soundShot[0] = LoadSoundMem("Sounds/shotNormal.mp3");
+	soundShot[1] = LoadSoundMem("Sounds/shotTwin.mp3");
+	soundShot[2] = LoadSoundMem("Sounds/shotHoming.mp3");
 }
 
 GameScene::~GameScene()
@@ -101,6 +110,8 @@ void GameScene::FirstInit()
 
 	playTimer = 0;
 	afterClear = 0;
+
+	volume = 255;
 }
 
 void GameScene::Initialize(DataManager* dataManager)
@@ -116,6 +127,9 @@ void GameScene::Initialize(DataManager* dataManager)
 
 int GameScene::Update(char* keys, char* oldkeys)
 {
+	if (CheckSoundMem(bgm[wave - 1]) == 0) {
+		PlaySoundMem(bgm[wave - 1], DX_PLAYTYPE_LOOP);
+	}
 	/*Ž©‹@ˆÚ“®*/
 	if (keys[KEY_INPUT_RIGHT] == 1) {
 		x += speed;
@@ -222,7 +236,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 			power[shotNum++] = 5 + 5 * beamLevel[normal];
 			if (shotNum >= ALLBEAM) { shotNum = 0; }
 			reload = 8;
-			PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundShot[normal], DX_PLAYTYPE_BACK);
 			break;
 
 		case twin:
@@ -238,7 +252,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 				if (shotNum >= _countof(shot)) { shotNum = 0; }
 			}
 			reload = 8;
-			PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundShot[twin], DX_PLAYTYPE_BACK);
 			break;
 
 		case homing:
@@ -253,7 +267,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 			forHoming[shotNum++] = 0;
 			if (shotNum >= _countof(shot)) { shotNum = 0; }
 			reload = 20;
-			PlaySoundMem(soundShot, DX_PLAYTYPE_BACK);
+			PlaySoundMem(soundShot[homing], DX_PLAYTYPE_BACK);
 			break;
 		}
 	}
@@ -379,6 +393,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 		}
 	}
 	if (pattern->SpawnCheck(playTimer) == 9999 && homingLocked == ENEMYLIMIT * 10) {
+		if (volume > 0) { volume -= 2; }
+		else if (volume < 0) { volume = 0; }
+		ChangeVolumeSoundMem(volume, bgm[wave - 1]);
 		afterClear++;
 		if (afterClear >= 140 && sceneSwitch == false) {
 			afterClear = 0;
@@ -459,7 +476,9 @@ void GameScene::Draw()
 	//		DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(0, 0, 0));
 	//	}
 	//}
-	DrawGraph(852, 20, graphMaterial01, true);
+	DrawGraph(852, 20, graphMaterial[0], true);
+	DrawGraph(952, 20, graphMaterial[1], true);
+	DrawGraph(1052, 20, graphMaterial[2], true);
 	for (int i = 0; i < mateDigit[0]; i++)
 	{
 		DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
@@ -469,14 +488,14 @@ void GameScene::Draw()
 	}
 	for (int i = 0; i < mateDigit[1]; i++)
 	{
-		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
+		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[1] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[1] == 0) {
 		DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
 	}
 	for (int i = 0; i < mateDigit[2]; i++)
 	{
-		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
+		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[2] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[2] == 0) {
 		DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
