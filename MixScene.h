@@ -17,6 +17,8 @@ private:
 
 	int beamLevel[4] = {};
 
+	int cursor[2] = {};
+
 	bool sceneSwitch;
 
 	int recipeY;
@@ -36,6 +38,7 @@ private:
 	int font[10];
 	int bgmMix;
 	int volume;
+	int soundMixUp;
 
 public:
 	MixScene();

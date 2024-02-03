@@ -27,6 +27,7 @@ MixScene::MixScene()
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
 	bgmMix = LoadSoundMem("Sounds/mixing.mp3");
 	volume = 255;
+	soundMixUp = LoadSoundMem("Sounds/mixUp.mp3");
 }
 
 MixScene::~MixScene()
@@ -57,9 +58,31 @@ int MixScene::Update(char* keys, char* oldkeys)
 	/*âŒóÕã≠âª*/
 	if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
 		if (material[0] >= 15) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
 			material[0] -= 15;
 			beamLevel[normal]++;
 		}
+	}
+	/*ÉJÅ[É\Éãà⁄ìÆ*/
+	if (keys[KEY_INPUT_UP] == 1 && oldkeys[KEY_INPUT_UP] == 0) {
+		cursor[1]--;
+		while (cursor[1] < 0) { cursor[1] += 4; }
+	}
+	if (keys[KEY_INPUT_DOWN] == 1 && oldkeys[KEY_INPUT_DOWN] == 0) {
+		cursor[1]++;
+		while (cursor[1] > 3) { cursor[1] -= 4; }
+	}
+	if (keys[KEY_INPUT_LEFT] == 1 && oldkeys[KEY_INPUT_LEFT] == 0) {
+		cursor[0]--;
+		while (cursor[0] < 0) { cursor[0] += 2; }
+	}
+	if (keys[KEY_INPUT_RIGHT] == 1 && oldkeys[KEY_INPUT_RIGHT] == 0) {
+		cursor[0]++;
+		while (cursor[0] > 1) { cursor[0] -= 2; }
+	}
+	if (cursor[0] == 0 && cursor[1] == 3) {
+		cursor[1] = 2;
+		if (keys[KEY_INPUT_DOWN] == 1) { cursor[1] = 0; }
 	}
 	if (sceneSwitch == false && keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
 		sceneSwitch = true;
@@ -76,6 +99,7 @@ int MixScene::Update(char* keys, char* oldkeys)
 
 			recipeY = 0;
 
+			StopSoundMem(bgmMix);
 			return play;
 		}
 	}
@@ -105,33 +129,33 @@ void MixScene::Draw()
 	DrawGraph(areaX / 2 - sizePlayerX / 2 + areaLeft, areaY - 100 - sizePlayerY / 2 + areaTop, graphPlayer, true);
 	DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
 	if (sceneSwitch == false) {
-		DrawGraph(areaLeft, areaTop, graphCursor, true);
+		DrawGraph(294 * cursor[0] + 138, 108 * cursor[1] + 48, graphCursor, true);
 	}
 	DrawGraph(0, 0, graphFrame, true);
 	DrawGraph(0, 0, graphButton, true);
-	DrawGraph(852, 20, graphMaterial[0], true);
-	DrawGraph(952, 20, graphMaterial[1], true);
-	DrawGraph(1052, 20, graphMaterial[2], true);
+	if (material[0] > 0) { DrawGraph(852, 20, graphMaterial[0], true); }
+	if (material[1] > 0) { DrawGraph(952, 20, graphMaterial[1], true); }
+	if (material[2] > 0) { DrawGraph(1052, 20, graphMaterial[2], true); }
 	for (int i = 0; i < mateDigit[0]; i++)
 	{
 		DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[0] == 0) {
-		DrawExtendGraph(900, 84, 932, 116, font[0], true);
+		//DrawExtendGraph(900, 84, 932, 116, font[0], true);
 	}
 	for (int i = 0; i < mateDigit[1]; i++)
 	{
 		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[1] == 0) {
-		DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
+		//DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
 	}
 	for (int i = 0; i < mateDigit[2]; i++)
 	{
 		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[2] == 0) {
-		DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
+		//DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
 	}
 }
 

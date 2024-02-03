@@ -72,6 +72,7 @@ private:
 	int graphEnemy[3];
 	int sizeEnemyX[3];
 	int sizeEnemyY[3];
+	int graphBeam[3];
 	int graphFrame;
 	int graphButton;
 	int graphRecipe;

@@ -21,7 +21,7 @@ GameScene::GameScene()
 		enemyAlive[i] = false;
 	}
 
-	beamR = 5;
+	beamR = 6;
 	homingLocked = ENEMYLIMIT * 10;
 	shotNum = 0;
 	reload = 0;
@@ -59,6 +59,9 @@ GameScene::GameScene()
 	GetGraphSize(graphEnemy[0], &sizeEnemyX[0], &sizeEnemyY[0]);
 	GetGraphSize(graphEnemy[1], &sizeEnemyX[1], &sizeEnemyY[1]);
 	GetGraphSize(graphEnemy[2], &sizeEnemyX[2], &sizeEnemyY[2]);
+	graphBeam[0] = LoadGraph("Graphics/shotNormal.png");
+	graphBeam[1] = LoadGraph("Graphics/shotTwin.png");
+	graphBeam[2] = LoadGraph("Graphics/shotHoming.png");
 	graphFrame = LoadGraph("Graphics/frame.png");
 	graphButton = LoadGraph("Graphics/frame_UI.png");
 	graphRecipe = LoadGraph("Graphics/recipe_proto1.1.png");
@@ -183,11 +186,11 @@ int GameScene::Update(char* keys, char* oldkeys)
 					}
 				}
 				else if (enemyX[i] > x) {
-					enemyMoveX[i] = -2;
+					enemyMoveX[i] = -3;
 					enemyMoveY[i] = -2;
 				}
 				else {
-					enemyMoveX[i] = 2;
+					enemyMoveX[i] = 3;
 					enemyMoveY[i] = -2;
 				}
 			}
@@ -195,6 +198,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 				enemyMoveTime[i] = 0;
 				enemyMoveX[i] = 0;
 				enemyMoveY[i] = 2;
+			}
+			if (enemyType[i] == fairy) {
+
 			}
 			if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
 				enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
@@ -408,6 +414,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 				moveTime = 0;
 				sceneSwitch = false;
 
+				StopSoundMem(bgm[wave - 1]);
 				return mix;
 			}
 		}
@@ -461,7 +468,7 @@ void GameScene::Draw()
 	for (int i = 0; i < ALLBEAM; i++)
 	{
 		if (shot[i] == true) {
-			DrawCircle(int(beamX[i]) + areaLeft, int(beamY[i]) + areaTop, beamR, GetColor(255, 255, 255));
+			DrawGraph(int(beamX[i]) + areaLeft - beamR, int(beamY[i]) + areaTop - beamR, graphBeam[beamType[i]], TRUE);
 		}
 	}
 	DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
@@ -476,29 +483,29 @@ void GameScene::Draw()
 	//		DrawString(i % 100 * 6 + i / 100, i / 100 * 10, "|", GetColor(0, 0, 0));
 	//	}
 	//}
-	DrawGraph(852, 20, graphMaterial[0], true);
-	DrawGraph(952, 20, graphMaterial[1], true);
-	DrawGraph(1052, 20, graphMaterial[2], true);
+	if (material[0] > 0) { DrawGraph(852, 20, graphMaterial[0], true); }
+	if (material[1] > 0) { DrawGraph(952, 20, graphMaterial[1], true); }
+	if (material[2] > 0) { DrawGraph(1052, 20, graphMaterial[2], true); }
 	for (int i = 0; i < mateDigit[0]; i++)
 	{
 		DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[0] == 0) {
-		DrawExtendGraph(900, 84, 932, 116, font[0], true);
+		//DrawExtendGraph(900, 84, 932, 116, font[0], true);
 	}
 	for (int i = 0; i < mateDigit[1]; i++)
 	{
 		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[1] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[1] == 0) {
-		DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
+		//DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
 	}
 	for (int i = 0; i < mateDigit[2]; i++)
 	{
 		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[2] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[2] == 0) {
-		DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
+		//DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
 	}
 }
 
