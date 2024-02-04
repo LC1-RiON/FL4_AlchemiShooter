@@ -354,7 +354,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 				float(x), float(y), float(r),
 				enemyX[j], enemyY[j], float(enemyR)) == true) {
 				avoid = 180;
-				//life--;
+				life--;
 				enemyAlive[j] = false;
 				homingLocked = ENEMYLIMIT * 10;
 				for (int i = 0; i < ENEMYLIMIT; i++)
@@ -479,7 +479,37 @@ void GameScene::Draw()
 	for (int i = 0; i < ALLBEAM; i++)
 	{
 		if (shot[i] == true) {
-			DrawGraph(int(beamX[i]) + areaLeft - beamR, int(beamY[i]) + areaTop - beamR, graphBeam[beamType[i]], TRUE);
+			switch (beamType[i])
+			{
+			case normal:
+				DrawGraph(
+					int(beamX[i]) + areaLeft - beamR,
+					int(beamY[i]) + areaTop - beamR,
+					graphBeam[normal], TRUE);
+				break;
+
+			case twin:
+				if (beamMoveX[i] > 0) {
+					DrawRotaGraph(
+						int(beamX[i]) + areaLeft,
+						int(beamY[i]) + areaTop,
+						1.0, ConvertToRadian(45.0f), graphBeam[twin], TRUE);
+				}
+				else {
+					DrawRotaGraph(
+						int(beamX[i]) + areaLeft,
+						int(beamY[i]) + areaTop,
+						1.0, ConvertToRadian(-45.0f), graphBeam[twin], TRUE);
+				}
+				break;
+
+			case homing:
+				DrawGraph(
+					int(beamX[i]) + areaLeft - beamR,
+					int(beamY[i]) + areaTop - beamR,
+					graphBeam[homing], TRUE);
+				break;
+			}
 		}
 	}
 	DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
