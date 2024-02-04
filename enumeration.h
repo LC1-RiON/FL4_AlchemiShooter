@@ -4,7 +4,7 @@ enum Scene {
 };
 
 enum BeamType {
-	normal, twin, homing
+	normal, twin, homing, enemy
 };
 
 enum EnemyType {

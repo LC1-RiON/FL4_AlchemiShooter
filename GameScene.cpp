@@ -202,13 +202,28 @@ int GameScene::Update(char* keys, char* oldkeys)
 				enemyMoveAngle[i] = 90;
 				enemyMoveSpeed[i] = 2;
 			}
-			// 妖精種の飛行
+			// 妖精種の飛行及び攻撃
 			if (enemyType[i] == fairy) {
 				if (enemyX[i] * 2 < areaX) {
 					enemyMoveAngle[i] -= 0.5f;
 				}
 				else {
 					enemyMoveAngle[i] += 0.5f;
+				}
+				if (enemyMoveTime[i] >= 180) {
+					while (shot[shotNum] == true) { shotNum++; }
+					beamX[shotNum] = enemyX[i];
+					beamY[shotNum] = enemyY[i];
+					float rangeX = float(x) - enemyX[i];
+					float rangeY = float(y) - enemyY[i];
+					float length = sqrtf(powf(rangeX, 2.0f) + powf(rangeY, 2.0f));
+					beamMoveX[shotNum] = 4.0f * rangeX / length;
+					beamMoveY[shotNum] = 4.0f * rangeY / length;
+					shot[shotNum] = true;
+					beamType[shotNum] = enemy;
+					power[shotNum++] = 1;
+					if (shotNum >= ALLBEAM) { shotNum = 0; }
+					enemyMoveTime[i] = 0;
 				}
 			}
 			if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
@@ -316,6 +331,11 @@ int GameScene::Update(char* keys, char* oldkeys)
 					}
 				}
 				break;
+
+			case enemy:
+				beamX[i] += beamMoveX[i];
+				beamY[i] += beamMoveY[i];
+				break;
 			}
 			if (beamY[i] <= -beamR || beamY[i] >= areaY + beamR ||
 				beamX[i] <= -beamR || beamX[i] >= areaX + beamR) {
@@ -325,13 +345,21 @@ int GameScene::Update(char* keys, char* oldkeys)
 	}
 
 	/*衝突判定*/
-	for (int j = 0; j < ENEMYLIMIT; j++)
+	for (int i = 0; i < ALLBEAM; i++)
 	{
-		if (enemyAlive[j] == true) {
-			for (int i = 0; i < ALLBEAM; i++)
+		if (shot[i] == true) {
+			/*プレイヤー-ビーム間衝突*/
+			if (beamType[i] == enemy && avoid <= 0 && Collision::HitCheck(
+				float(x), float(y), float(r),
+				beamX[i], beamY[i], float(beamR)) == true) {
+				avoid = 180;
+				life--;
+				shot[i] = false;
+			}
+			for (int j = 0; j < ENEMYLIMIT; j++)
 			{
 				/*エネミー-ビーム間衝突*/
-				if (shot[i] == true && Collision::HitCheck(
+				if (enemyAlive[j] == true && beamType[i] != enemy && Collision::HitCheck(
 					beamX[i], beamY[i], float(beamR),
 					enemyX[j], enemyY[j], float(enemyR)) == true) {
 					shot[i] = false;
@@ -349,19 +377,21 @@ int GameScene::Update(char* keys, char* oldkeys)
 					}
 				}
 			}
-			/*エネミー-プレイヤー間衝突*/
-			if (avoid <= 0 && Collision::HitCheck(
-				float(x), float(y), float(r),
-				enemyX[j], enemyY[j], float(enemyR)) == true) {
-				avoid = 180;
-				life--;
-				enemyAlive[j] = false;
-				homingLocked = ENEMYLIMIT * 10;
-				for (int i = 0; i < ENEMYLIMIT; i++)
-				{
-					if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
-						homingLocked = homingTarget[i];
-					}
+		}
+	}
+	for (int j = 0; j < ENEMYLIMIT; j++) {
+		/*エネミー-プレイヤー間衝突*/
+		if (enemyAlive[j] == true && avoid <= 0 && Collision::HitCheck(
+			float(x), float(y), float(r),
+			enemyX[j], enemyY[j], float(enemyR)) == true) {
+			avoid = 180;
+			life--;
+			enemyAlive[j] = false;
+			homingLocked = ENEMYLIMIT * 10;
+			for (int i = 0; i < ENEMYLIMIT; i++)
+			{
+				if (enemyAlive[i] == true && homingTarget[i] < homingLocked) {
+					homingLocked = homingTarget[i];
 				}
 			}
 		}
@@ -508,6 +538,10 @@ void GameScene::Draw()
 					int(beamX[i]) + areaLeft - beamR,
 					int(beamY[i]) + areaTop - beamR,
 					graphBeam[homing], TRUE);
+				break;
+
+			case enemy:
+				DrawCircle(int(beamX[i]) + areaLeft, int(beamY[i]) + areaTop, beamR, GetColor(128, 28, 128));
 				break;
 			}
 		}
