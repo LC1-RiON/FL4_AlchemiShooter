@@ -8,6 +8,11 @@ MixScene::MixScene()
 {
 	bgY = -1;
 
+	reloadSpeed = 0;
+	shield = 0;
+	warp = 0;
+	bomb = 0;
+
 	sceneSwitch = false;
 
 	recipeY = 0;

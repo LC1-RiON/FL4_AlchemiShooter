@@ -38,15 +38,15 @@ private:
 	int enemyR;
 	int enemyCount;
 
-	float beamX[ALLBEAM];
-	float beamY[ALLBEAM];
+	float beamX[ALLBEAM] = {};
+	float beamY[ALLBEAM] = {};
 	int beamR;
-	float beamMoveX[ALLBEAM];
-	float beamMoveY[ALLBEAM];
+	float beamMoveX[ALLBEAM] = {};
+	float beamMoveY[ALLBEAM] = {};
 	bool shot[ALLBEAM];
-	int beamType[ALLBEAM];
-	int power[ALLBEAM];
-	int forHoming[ALLBEAM];
+	int beamType[ALLBEAM] = {};
+	int power[ALLBEAM] = {};
+	int forHoming[ALLBEAM] = {};
 	int homingLocked;
 	int shotNum;
 	int reload;

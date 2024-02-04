@@ -31,7 +31,14 @@ GameScene::GameScene()
 	shotMode = 0;
 	bomb = 0;
 	for (int i = 0; i < ALLBEAM; i++) {
+		beamX[i] = 0;
+		beamY[i] = 0;
+		beamMoveX[i] = 0;
+		beamMoveY[i] = 0;
 		shot[i] = false;
+		beamType[i] = 0;
+		power[i] = 0;
+		forHoming[i] = 0;
 	}
 
 	beamLevel[0] = 1;
@@ -44,6 +51,8 @@ GameScene::GameScene()
 	wave = 1;
 	playTimer = 0;
 	afterClear = 0;
+
+	digChecker = 0;
 
 	sceneSwitch = false;
 
