@@ -47,7 +47,8 @@ void MixScene::Initialize(DataManager* dataManager)
 	dataManager->GiveData(
 		bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2], recipeY,
-		mateDigit[0], mateDigit[1], mateDigit[2]);
+		mateDigit[0], mateDigit[1], mateDigit[2],
+		reloadSpeed, shield, warp, bomb);
 }
 
 int MixScene::Update(char* keys, char* oldkeys)
@@ -55,14 +56,6 @@ int MixScene::Update(char* keys, char* oldkeys)
 	if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK); }
 	bgY += 4;
 	if (bgY >= areaY) { bgY -= areaY; }
-	/*‰Î—Í‹­‰»*/
-	if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
-		if (material[0] >= 15) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[0] -= 15;
-			beamLevel[normal]++;
-		}
-	}
 	/*ƒJ[ƒ\ƒ‹ˆÚ“®*/
 	if (keys[KEY_INPUT_UP] == 1 && oldkeys[KEY_INPUT_UP] == 0) {
 		cursor[1]--;
@@ -83,6 +76,49 @@ int MixScene::Update(char* keys, char* oldkeys)
 	if (cursor[0] == 0 && cursor[1] == 3) {
 		cursor[1] = 2;
 		if (keys[KEY_INPUT_DOWN] == 1) { cursor[1] = 0; }
+	}
+	/*‹­‰»*/
+	if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
+		if (cursor[0] == 0 && cursor[1] == 0 && material[0] >= 15) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[0] -= 15;
+			beamLevel[normal]++;
+		}
+		else if (cursor[0] == 0 && cursor[1] == 1 && material[1] >= 10) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[1] -= 10;
+			beamLevel[twin]++;
+		}
+		else if (cursor[0] == 0 && cursor[1] == 2 && material[2] >= 10) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[2] -= 10;
+			beamLevel[homing]++;
+		}
+		else if (cursor[0] == 1 && cursor[1] == 0 && material[0] >= 10 && material[1] >= 10) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[0] -= 10;
+			material[1] -= 10;
+			reloadSpeed++;
+		}
+		else if (cursor[0] == 1 && cursor[1] == 1 && material[1] >= 10 && material[2] >= 10) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[1] -= 10;
+			material[2] -= 10;
+			shield++;
+		}
+		else if (cursor[0] == 1 && cursor[1] == 2 && material[2] >= 10 && material[0] >= 10) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[2] -= 10;
+			material[0] -= 10;
+			warp++;
+		}
+		else if (cursor[0] == 1 && cursor[1] == 0 && material[0] >= 10 && material[1] >= 10 && material[2] >= 10) {
+			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+			material[0] -= 10;
+			material[1] -= 10;
+			material[2] -= 10;
+			bomb++;
+		}
 	}
 	if (sceneSwitch == false && keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
 		sceneSwitch = true;
@@ -145,14 +181,14 @@ void MixScene::Draw()
 	}
 	for (int i = 0; i < mateDigit[1]; i++)
 	{
-		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
+		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[1] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[1] == 0) {
 		//DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
 	}
 	for (int i = 0; i < mateDigit[2]; i++)
 	{
-		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
+		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[2] / int(pow(10, i)) % 10], true);
 	}
 	if (mateDigit[2] == 0) {
 		//DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
@@ -164,7 +200,8 @@ void MixScene::DataSave(DataManager* dataManager)
 	dataManager->GetData(
 		bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2],
-		recipeY, mateDigit[0], mateDigit[1], mateDigit[2]);
+		recipeY, mateDigit[0], mateDigit[1], mateDigit[2],
+		reloadSpeed, shield, warp, bomb);
 }
 
 void MixScene::GiveData(

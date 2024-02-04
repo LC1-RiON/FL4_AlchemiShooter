@@ -19,7 +19,9 @@ private:
 	int y;
 	int r;
 	int speed;
+	int warp;
 	int life;
+	int shield;
 	int avoid;
 
 	float enemyX[ENEMYLIMIT] = {};
@@ -48,8 +50,10 @@ private:
 	int homingLocked;
 	int shotNum;
 	int reload;
+	int reloadSpeed;
 	int beamLevel[3] = {};
 	int shotMode;
+	int bomb;
 
 	int recipeY;
 	float moveTime;

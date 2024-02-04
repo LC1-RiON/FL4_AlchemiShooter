@@ -10,7 +10,9 @@ GameScene::GameScene()
 	y = areaY - 100;
 	r = 20;
 	speed = 4;
+	warp = 0;
 	life = 5;
+	shield = 0;
 	avoid = 0;
 
 	enemyR = 10;
@@ -25,7 +27,9 @@ GameScene::GameScene()
 	homingLocked = ENEMYLIMIT * 10;
 	shotNum = 0;
 	reload = 0;
+	reloadSpeed = 0;
 	shotMode = 0;
+	bomb = 0;
 	for (int i = 0; i < ALLBEAM; i++) {
 		shot[i] = false;
 	}
@@ -125,7 +129,8 @@ void GameScene::Initialize(DataManager* dataManager)
 	dataManager->GiveData(
 		bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2], recipeY,
-		mateDigit[0], mateDigit[1], mateDigit[2]);
+		mateDigit[0], mateDigit[1], mateDigit[2],
+		reloadSpeed, shield, warp, bomb);
 }
 
 int GameScene::Update(char* keys, char* oldkeys)
@@ -589,7 +594,8 @@ void GameScene::DataSave(DataManager* dataManager)
 	dataManager->GetData(
 		bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2],
-		recipeY, mateDigit[0], mateDigit[1], mateDigit[2]);
+		recipeY, mateDigit[0], mateDigit[1], mateDigit[2],
+		reloadSpeed, shield, warp, bomb);
 }
 
 void GameScene::GiveData(

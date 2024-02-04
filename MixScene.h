@@ -16,6 +16,10 @@ private:
 	int material[3] = {};
 
 	int beamLevel[4] = {};
+	int reloadSpeed;
+	int shield;
+	int warp;
+	int bomb;
 
 	int cursor[2] = {};
 
