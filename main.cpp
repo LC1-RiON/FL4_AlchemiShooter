@@ -9,7 +9,7 @@
 #include "enumeration.h"
 
 #define PI	3.14159265359f
-#define PIdiv2	(3.14159265359f / 2.0f)
+#define DX_DIV_PI_F	(3.14159265359f / 2.0f)
 
 const char TITLE[] = "AlchemiShooter";
 

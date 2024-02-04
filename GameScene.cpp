@@ -2,7 +2,7 @@
 #include "Collision.h"
 #include <math.h>
 
-#define PIdiv2	(3.14159265359f / 2.0f)
+#define DX_DIV_PI_F	(DX_PI_F / 2.0f)
 
 GameScene::GameScene()
 {
@@ -124,7 +124,7 @@ void GameScene::Initialize(DataManager* dataManager)
 
 	dataManager->GiveData(
 		bgY, material[0], material[1], material[2],
-		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3], recipeY,
+		beamLevel[0], beamLevel[1], beamLevel[2], recipeY,
 		mateDigit[0], mateDigit[1], mateDigit[2]);
 }
 
@@ -171,33 +171,36 @@ int GameScene::Update(char* keys, char* oldkeys)
 	for (int i = 0; i < ENEMYLIMIT; i++)
 	{
 		if (enemyAlive[i] == true) {
+			enemyMoveX[i] = cosf(ConvertToRadian(enemyMoveAngle[i])) * enemyMoveSpeed[i];
+			enemyMoveY[i] = sinf(ConvertToRadian(enemyMoveAngle[i])) * enemyMoveSpeed[i];
 			enemyX[i] += enemyMoveX[i];
 			enemyY[i] += enemyMoveY[i];
 			enemyMoveTime[i]++;
 			// 獣種の横ステップ
-			if (enemyType[i] == beast && enemyMoveX[i] == 0 && enemyMoveTime[i] >= 40) {
+			if (enemyType[i] == beast && enemyMoveSpeed[i] == 2 && enemyMoveTime[i] >= 40) {
 				enemyMoveTime[i] = 0;
 				if (powf(float(x) - float(enemyX[i]), 2.0f) <= 225.0f) {
 					if (enemyX[i] * 2 > areaX) {
-						enemyMoveX[i] = -4;
+						enemyMoveAngle[i] += 45;
 					}
 					else {
-						enemyMoveX[i] = 4;
+						enemyMoveAngle[i] -= 45;
 					}
+					enemyMoveSpeed[i] = 4;
 				}
 				else if (enemyX[i] > x) {
-					enemyMoveX[i] = -3;
-					enemyMoveY[i] = -2;
+					enemyMoveAngle[i] = 210;
+					enemyMoveSpeed[i] = 3;
 				}
 				else {
-					enemyMoveX[i] = 3;
-					enemyMoveY[i] = -2;
+					enemyMoveAngle[i] = 330;
+					enemyMoveSpeed[i] = 3;
 				}
 			}
-			else if (enemyType[i] == beast && enemyMoveX[i] != 0 && enemyMoveTime[i] >= 30) {
+			else if (enemyType[i] == beast && enemyMoveSpeed[i] != 2 && enemyMoveTime[i] >= 30) {
 				enemyMoveTime[i] = 0;
-				enemyMoveX[i] = 0;
-				enemyMoveY[i] = 2;
+				enemyMoveAngle[i] = 90;
+				enemyMoveSpeed[i] = 2;
 			}
 			if (enemyType[i] == fairy) {
 
@@ -322,8 +325,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 			for (int i = 0; i < ALLBEAM; i++)
 			{
 				/*エネミー-ビーム間衝突*/
-				if (shot[i] == true &&
-					Collision::HitCheck(beamX[i], beamY[i], beamR, enemyX[j], enemyY[j], enemyR) == true) {
+				if (shot[i] == true && Collision::HitCheck(
+					beamX[i], beamY[i], float(beamR),
+					enemyX[j], enemyY[j], float(enemyR)) == true) {
 					shot[i] = false;
 					enemyHP[j] -= power[i];
 					if (enemyHP[j] <= 0) {
@@ -340,8 +344,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 				}
 			}
 			/*エネミー-プレイヤー間衝突*/
-			if (avoid <= 0 &&
-				Collision::HitCheck(x, y, r, enemyX[j], enemyY[j], enemyR) == true) {
+			if (avoid <= 0 && Collision::HitCheck(
+				float(x), float(y), float(r),
+				enemyX[j], enemyY[j], float(enemyR)) == true) {
 				avoid = 180;
 				//life--;
 				enemyAlive[j] = false;
@@ -386,7 +391,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 		pattern->Spawn(
 			&enemyType[enemyCount], &enemyHP[enemyCount],
 			&enemyX[enemyCount], &enemyY[enemyCount],
-			&enemyMoveX[enemyCount], &enemyMoveY[enemyCount]);
+			&enemyMoveAngle[enemyCount], &enemyMoveSpeed[enemyCount]);
 		enemyAlive[enemyCount] = true;
 		enemyMoveTime[enemyCount] = 0;
 		homingTarget[enemyCount] = enemyCount++;
@@ -409,7 +414,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 		}
 		else if (sceneSwitch == true) {
 			moveTime++;
-			recipeY = sinf(PIdiv2 * (moveTime / 40.0f)) * areaY;
+			recipeY = int(sinf(DX_DIV_PI_F * (moveTime / 40.0f)) * areaY);
 			if (moveTime >= 40) {
 				moveTime = 0;
 				sceneSwitch = false;
@@ -439,27 +444,27 @@ void GameScene::Draw()
 	for (int i = 0; i < ENEMYLIMIT; i++)
 	{
 		if (enemyAlive[i] == true) {
-			DrawCircle(enemyX[i] + areaLeft, enemyY[i] + areaTop, enemyR, GetColor(179, 207, 255));
+			DrawCircle(int(enemyX[i]) + areaLeft, int(enemyY[i]) + areaTop, enemyR, GetColor(179, 207, 255));
 			switch (enemyType[i])
 			{
 			case slime:
 				DrawGraph(
-					enemyX[i] - sizeEnemyX[slime] / 2 + areaLeft,
-					enemyY[i] - sizeEnemyY[slime] / 2 + areaTop,
+					int(enemyX[i]) - sizeEnemyX[slime] / 2 + areaLeft,
+					int(enemyY[i]) - sizeEnemyY[slime] / 2 + areaTop,
 					graphEnemy[slime], true);
 				break;
 
 			case beast:
 				DrawGraph(
-					enemyX[i] - sizeEnemyX[beast] / 2 + areaLeft,
-					enemyY[i] - sizeEnemyY[beast] / 2 + areaTop,
+					int(enemyX[i]) - sizeEnemyX[beast] / 2 + areaLeft,
+					int(enemyY[i]) - sizeEnemyY[beast] / 2 + areaTop,
 					graphEnemy[beast], true);
 				break;
 
 			case fairy:
 				DrawGraph(
-					enemyX[i] - sizeEnemyX[fairy] / 2 + areaLeft,
-					enemyY[i] - sizeEnemyY[fairy] / 2 + areaTop,
+					int(enemyX[i]) - sizeEnemyX[fairy] / 2 + areaLeft,
+					int(enemyY[i]) - sizeEnemyY[fairy] / 2 + areaTop,
 					graphEnemy[fairy], true);
 				break;
 			}
@@ -513,7 +518,7 @@ void GameScene::DataSave(DataManager* dataManager)
 {
 	dataManager->GetData(
 		bgY, material[0], material[1], material[2],
-		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3],
+		beamLevel[0], beamLevel[1], beamLevel[2],
 		recipeY, mateDigit[0], mateDigit[1], mateDigit[2]);
 }
 
@@ -537,3 +542,4 @@ void GameScene::GiveData(
 		mateDigit03 = mateDigit[2];
 	}
 }
+

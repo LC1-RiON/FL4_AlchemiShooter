@@ -22,10 +22,12 @@ private:
 	int life;
 	int avoid;
 
-	int enemyX[ENEMYLIMIT] = {};
-	int enemyY[ENEMYLIMIT] = {};
-	int enemyMoveX[ENEMYLIMIT] = {};
-	int enemyMoveY[ENEMYLIMIT] = {};
+	float enemyX[ENEMYLIMIT] = {};
+	float enemyY[ENEMYLIMIT] = {};
+	float enemyMoveAngle[ENEMYLIMIT] = {};
+	float enemyMoveSpeed[ENEMYLIMIT] = {};
+	float enemyMoveX[ENEMYLIMIT] = {};
+	float enemyMoveY[ENEMYLIMIT] = {};
 	int enemyMoveTime[ENEMYLIMIT] = {};
 	int enemyType[ENEMYLIMIT] = {};
 	int enemyHP[ENEMYLIMIT] = {};
@@ -105,5 +107,7 @@ public:
 		int& beamLevel01, int& beamLevel02, int& beamLevel03, int& recipeY_g,
 		int& mateDigit01, int& mateDigit02, int& mateDigit03
 	);
+
+	float ConvertToRadian(float angle) { return DX_PI_F * angle / 180.0f; }
 };
 

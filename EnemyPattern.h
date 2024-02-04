@@ -10,10 +10,10 @@ private:
 	int type[TOTALWAVE][WAVELIMIT] = {};
 	int hp[TOTALWAVE][WAVELIMIT] = {};
 	int spawn[TOTALWAVE][WAVELIMIT] = {};
-	int x[TOTALWAVE][WAVELIMIT] = {};
-	int y[TOTALWAVE][WAVELIMIT] = {};
-	int moveX[TOTALWAVE][WAVELIMIT] = {};
-	int moveY[TOTALWAVE][WAVELIMIT] = {};
+	float x[TOTALWAVE][WAVELIMIT] = {};
+	float y[TOTALWAVE][WAVELIMIT] = {};
+	float moveAngle[TOTALWAVE][WAVELIMIT] = {};
+	float moveSpeed[TOTALWAVE][WAVELIMIT] = {};
 	int count = 0;
 	int wave = 0;
 
@@ -26,5 +26,5 @@ public:
 
 	int SpawnCheck(int timer);
 
-	void Spawn(int* enemyType, int* enemyHP, int* enemyX, int* enemyY, int* enemyMoveX, int* enemyMoveY);
+	void Spawn(int* enemyType, int* enemyHP, float* enemyX, float* enemyY, float* enemyMoveAngle, float* enemyMoveSpeed);
 };

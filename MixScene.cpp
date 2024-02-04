@@ -2,7 +2,7 @@
 #include "enumeration.h"
 #include <math.h>
 
-#define PIdiv2	(3.14159265359f / 2.0f)
+#define DX_DIV_PI_F	(3.14159265359f / 2.0f)
 
 MixScene::MixScene()
 {
@@ -46,7 +46,7 @@ void MixScene::Initialize(DataManager* dataManager)
 
 	dataManager->GiveData(
 		bgY, material[0], material[1], material[2],
-		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3], recipeY,
+		beamLevel[0], beamLevel[1], beamLevel[2], recipeY,
 		mateDigit[0], mateDigit[1], mateDigit[2]);
 }
 
@@ -92,7 +92,7 @@ int MixScene::Update(char* keys, char* oldkeys)
 		else if (volume < 0) { volume = 0; }
 		ChangeVolumeSoundMem(volume, bgmMix);
 		moveTime++;
-		recipeY = cosf(PIdiv2 * (moveTime / 40.0f)) * areaY;
+		recipeY = cosf(DX_DIV_PI_F * (moveTime / 40.0f)) * areaY;
 		if (moveTime >= 40) {
 			moveTime = 0;
 			sceneSwitch = false;
@@ -163,7 +163,7 @@ void MixScene::DataSave(DataManager* dataManager)
 {
 	dataManager->GetData(
 		bgY, material[0], material[1], material[2],
-		beamLevel[0], beamLevel[1], beamLevel[2], beamLevel[3],
+		beamLevel[0], beamLevel[1], beamLevel[2],
 		recipeY, mateDigit[0], mateDigit[1], mateDigit[2]);
 }
 

@@ -1,4 +1,4 @@
-	#include "EnemyPattern.h"
+#include "EnemyPattern.h"
 #include <stdlib.h>
 
 EnemyPattern::EnemyPattern()
@@ -30,16 +30,16 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		},
 		{
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
-		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
+slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		},
 		{
 		slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
@@ -129,7 +129,7 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		9999,9999,9999,9999,9999,9999,9999,9999,9999,9999
 		}
 	};
-	int xSet[TOTALWAVE][WAVELIMIT] = {
+	float xSet[TOTALWAVE][WAVELIMIT] = {
 		{
 325,325,325,325,325,200,200,200,200,200,
 450,450,450,450,450,660,-10,660,-10,660,
@@ -191,7 +191,7 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999
 		}
 	};
-	int ySet[TOTALWAVE][WAVELIMIT] = {
+	float ySet[TOTALWAVE][WAVELIMIT] = {
 		{
 -10,-10,-10,-10,-10,-10,-10,-10,-10,-10,
 -10,-10,-10,-10,-10,100,100,100,100,100,
@@ -253,13 +253,13 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999
 		}
 	};
-	int moveXSet[TOTALWAVE][WAVELIMIT] = {
+	float moveAngleSet[TOTALWAVE][WAVELIMIT] = {
 		{
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,-2,2,-2,2,-2,
-2,-2,2,-2,2,2,2,2,2,2,
--2,-2,-2,-2,-2,0,0,0,0,0,
-0,0,0,0,0,9999,9999,9999,9999,9999,
+90,90,90,90,90,90,90,90,90,90,
+90,90,90,90,90,135,45,135,45,135,
+45,135,45,135,45,0,0,0,0,0,
+180,180,180,180,180,90,90,90,90,90,
+90,90,90,90,90,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
@@ -267,11 +267,11 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999
 		},
 		{
--2,-2,-2,-2,2,2,2,2,-2,-2,
--2,-2,-2,-2,-2,2,2,2,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,9999,9999,9999,9999,9999,9999,9999,9999,9999,
+180,180,180,180,0,0,0,0,180,180,
+180,180,135,135,135,45,45,45,90,90,
+90,90,90,90,90,90,90,90,90,90,
+90,90,90,90,90,90,90,90,90,90,
+90,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
@@ -315,12 +315,12 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 		9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999,	9999
 		}
 	};
-	int moveYSet[TOTALWAVE][WAVELIMIT] = {
+	float moveSpeedSet[TOTALWAVE][WAVELIMIT] = {
 		{
 2,2,2,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,2,2,2,
-2,2,2,2,2,0,0,0,0,0,
-0,0,0,0,0,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,
+2,2,2,2,2,2,2,2,2,2,
 2,2,2,2,2,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999,
@@ -329,8 +329,8 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 9999,9999,9999,9999,9999,9999,9999,9999,9999,9999
 		},
 		{
-0,0,0,0,0,0,0,0,0,0,
-0,0,2,2,2,2,2,2,3,3,
+2,2,2,2,2,2,2,2,2,2,
+2,2,3,3,3,3,3,3,3,3,
 3,2,2,2,2,2,2,2,2,2,
 2,2,2,2,2,2,2,2,2,2,
 2,9999,9999,9999,9999,9999,9999,9999,9999,9999,
@@ -385,8 +385,8 @@ slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,	slime,
 			spawn[i][j] = spawnSet[i][j];
 			x[i][j] = xSet[i][j];
 			y[i][j] = ySet[i][j];
-			moveX[i][j] = moveXSet[i][j];
-			moveY[i][j] = moveYSet[i][j];
+			moveAngle[i][j] = moveAngleSet[i][j];
+			moveSpeed[i][j] = moveSpeedSet[i][j];
 			switch (type[i][j])
 			{
 			case slime:
@@ -422,12 +422,12 @@ int EnemyPattern::SpawnCheck(int timer)
 	return 0;
 }
 
-void EnemyPattern::Spawn(int* enemyType, int* enemyHP, int* enemyX, int* enemyY, int* enemyMoveX, int* enemyMoveY)
+void EnemyPattern::Spawn(int* enemyType, int* enemyHP, float* enemyX, float* enemyY, float* enemyMoveAngle, float* enemyMoveSpeed)
 {
 	*enemyType = type[wave][count];
 	*enemyHP = hp[wave][count];
 	*enemyX = x[wave][count];
 	*enemyY = y[wave][count];
-	*enemyMoveX = moveX[wave][count];
-	*enemyMoveY = moveY[wave][count++];
+	*enemyMoveAngle = moveAngle[wave][count];
+	*enemyMoveSpeed = moveSpeed[wave][count++];
 }
