@@ -202,8 +202,14 @@ int GameScene::Update(char* keys, char* oldkeys)
 				enemyMoveAngle[i] = 90;
 				enemyMoveSpeed[i] = 2;
 			}
+			// —d¸í‚Ì”òs
 			if (enemyType[i] == fairy) {
-
+				if (enemyX[i] * 2 < areaX) {
+					enemyMoveAngle[i] -= 0.5f;
+				}
+				else {
+					enemyMoveAngle[i] += 0.5f;
+				}
 			}
 			if (enemyX[i] >= areaX + enemyR || enemyX[i] <= -enemyR ||
 				enemyY[i] >= areaY + enemyR || enemyY[i] <= -enemyR) {
