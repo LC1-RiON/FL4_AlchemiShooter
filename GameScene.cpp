@@ -199,10 +199,10 @@ int GameScene::Update(char* keys, char* oldkeys)
 				enemyMoveTime[i] = 0;
 				if (powf(float(x) - float(enemyX[i]), 2.0f) <= 225.0f) {
 					if (enemyX[i] * 2 > areaX) {
-						enemyMoveAngle[i] += 45;
+						enemyMoveAngle[i] += 60;
 					}
 					else {
-						enemyMoveAngle[i] -= 45;
+						enemyMoveAngle[i] -= 60;
 					}
 					enemyMoveSpeed[i] = 4;
 				}
