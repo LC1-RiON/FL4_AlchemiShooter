@@ -42,6 +42,7 @@ private:
 	int font[10];
 	int bgmMix;
 	int volume;
+	int soundCursor;
 	int soundMixUp;
 
 public:

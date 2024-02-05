@@ -32,6 +32,7 @@ MixScene::MixScene()
 	LoadDivGraph("Graphics/font.png", 10, 10, 1, 64, 64, font);
 	bgmMix = LoadSoundMem("Sounds/mixing.mp3");
 	volume = 255;
+	soundCursor = LoadSoundMem("Sounds/cursor.mp3");
 	soundMixUp = LoadSoundMem("Sounds/mixUp.mp3");
 }
 
@@ -43,6 +44,7 @@ void MixScene::FirstInit()
 {
 	sceneSwitch = false;
 	volume = 255;
+	ChangeVolumeSoundMem(volume, bgmMix);
 }
 
 void MixScene::Initialize(DataManager* dataManager)
@@ -63,18 +65,22 @@ int MixScene::Update(char* keys, char* oldkeys)
 	if (bgY >= areaY) { bgY -= areaY; }
 	/*ÉJÅ[É\Éãà⁄ìÆ*/
 	if (keys[KEY_INPUT_UP] == 1 && oldkeys[KEY_INPUT_UP] == 0) {
+		PlaySoundMem(soundCursor, DX_PLAYTYPE_BACK);
 		cursor[1]--;
 		while (cursor[1] < 0) { cursor[1] += 4; }
 	}
 	if (keys[KEY_INPUT_DOWN] == 1 && oldkeys[KEY_INPUT_DOWN] == 0) {
+		PlaySoundMem(soundCursor, DX_PLAYTYPE_BACK);
 		cursor[1]++;
 		while (cursor[1] > 3) { cursor[1] -= 4; }
 	}
 	if (keys[KEY_INPUT_LEFT] == 1 && oldkeys[KEY_INPUT_LEFT] == 0) {
+		PlaySoundMem(soundCursor, DX_PLAYTYPE_BACK);
 		cursor[0]--;
 		while (cursor[0] < 0) { cursor[0] += 2; }
 	}
 	if (keys[KEY_INPUT_RIGHT] == 1 && oldkeys[KEY_INPUT_RIGHT] == 0) {
+		PlaySoundMem(soundCursor, DX_PLAYTYPE_BACK);
 		cursor[0]++;
 		while (cursor[0] > 1) { cursor[0] -= 2; }
 	}
@@ -84,17 +90,17 @@ int MixScene::Update(char* keys, char* oldkeys)
 	}
 	/*ã≠âª*/
 	if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
-		if (cursor[0] == 0 && cursor[1] == 0 && material[0] >= 15) {
+		if (cursor[0] == 0 && cursor[1] == 0 && material[0] >= 30) {
 			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[0] -= 15;
+			material[0] -= 30;
 			beamLevel[normal]++;
 		}
-		else if (cursor[0] == 0 && cursor[1] == 1 && material[1] >= 10) {
+		else if (cursor[0] == 0 && cursor[1] == 1 && material[1] >= 15) {
 			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
 			material[1] -= 10;
 			beamLevel[twin]++;
 		}
-		else if (cursor[0] == 0 && cursor[1] == 2 && material[2] >= 10) {
+		else if (cursor[0] == 0 && cursor[1] == 2 && material[2] >= 15) {
 			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
 			material[2] -= 10;
 			beamLevel[homing]++;

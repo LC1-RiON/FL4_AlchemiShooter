@@ -279,7 +279,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 			beamType[shotNum] = normal;
 			power[shotNum++] = 5 + 5 * beamLevel[normal];
 			if (shotNum >= ALLBEAM) { shotNum = 0; }
-			reload = 8;
+			reload = 8 - reloadSpeed * 2;
 			PlaySoundMem(soundShot[normal], DX_PLAYTYPE_BACK);
 			break;
 
@@ -295,7 +295,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 				power[shotNum++] = 4 + 4 * beamLevel[twin];
 				if (shotNum >= _countof(shot)) { shotNum = 0; }
 			}
-			reload = 8;
+			reload = 8 - reloadSpeed * 2;
 			PlaySoundMem(soundShot[twin], DX_PLAYTYPE_BACK);
 			break;
 
@@ -310,7 +310,7 @@ int GameScene::Update(char* keys, char* oldkeys)
 			power[shotNum] = 15 + 15 * beamLevel[homing];
 			forHoming[shotNum++] = 0;
 			if (shotNum >= _countof(shot)) { shotNum = 0; }
-			reload = 20;
+			reload = 20 - reloadSpeed * 2;
 			PlaySoundMem(soundShot[homing], DX_PLAYTYPE_BACK);
 			break;
 		}
