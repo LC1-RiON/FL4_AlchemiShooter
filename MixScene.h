@@ -44,6 +44,7 @@ private:
 	int volume;
 	int soundCursor;
 	int soundMixUp;
+	int soundError;
 
 public:
 	MixScene();

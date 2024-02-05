@@ -34,6 +34,7 @@ MixScene::MixScene()
 	volume = 255;
 	soundCursor = LoadSoundMem("Sounds/cursor.mp3");
 	soundMixUp = LoadSoundMem("Sounds/mixUp.mp3");
+	soundError = LoadSoundMem("Sounds/mixError.mp3");
 }
 
 MixScene::~MixScene()
@@ -90,45 +91,80 @@ int MixScene::Update(char* keys, char* oldkeys)
 	}
 	/*‹­‰»*/
 	if (keys[KEY_INPUT_SPACE] == 1 && oldkeys[KEY_INPUT_SPACE] == 0) {
-		if (cursor[0] == 0 && cursor[1] == 0 && material[0] >= 30) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[0] -= 30;
-			beamLevel[normal]++;
+		if (cursor[0] == 0 && cursor[1] == 0) {
+			if (material[0] >= 30) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[0] -= 30;
+				beamLevel[normal]++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
-		else if (cursor[0] == 0 && cursor[1] == 1 && material[1] >= 15) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[1] -= 10;
-			beamLevel[twin]++;
+		else if (cursor[0] == 0 && cursor[1] == 1) {
+			if (material[1] >= 15) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[1] -= 10;
+				beamLevel[twin]++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
-		else if (cursor[0] == 0 && cursor[1] == 2 && material[2] >= 15) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[2] -= 10;
-			beamLevel[homing]++;
+		else if (cursor[0] == 0 && cursor[1] == 2) {
+			if (material[2] >= 15) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[2] -= 10;
+				beamLevel[homing]++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
-		else if (cursor[0] == 1 && cursor[1] == 0 && material[0] >= 10 && material[1] >= 10) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[0] -= 10;
-			material[1] -= 10;
-			reloadSpeed++;
+		else if (cursor[0] == 1 && cursor[1] == 0) {
+			if (material[0] >= 10 && material[1] >= 10) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[0] -= 10;
+				material[1] -= 10;
+				reloadSpeed++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
-		else if (cursor[0] == 1 && cursor[1] == 1 && material[1] >= 10 && material[2] >= 10) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[1] -= 10;
-			material[2] -= 10;
-			shield++;
+		else if (cursor[0] == 1 && cursor[1] == 1) {
+			if (material[1] >= 10 && material[2] >= 10) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[1] -= 10;
+				material[2] -= 10;
+				shield++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
-		else if (cursor[0] == 1 && cursor[1] == 2 && material[2] >= 10 && material[0] >= 10) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[2] -= 10;
-			material[0] -= 10;
-			warp++;
+		else if (cursor[0] == 1 && cursor[1] == 2) {
+			if (material[2] >= 10 && material[0] >= 10) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[2] -= 10;
+				material[0] -= 10;
+				warp++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
-		else if (cursor[0] == 1 && cursor[1] == 0 && material[0] >= 10 && material[1] >= 10 && material[2] >= 10) {
-			PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-			material[0] -= 10;
-			material[1] -= 10;
-			material[2] -= 10;
-			bomb++;
+		else if (cursor[0] == 1 && cursor[1] == 3) {
+			if (material[0] >= 10 && material[1] >= 10 && material[2] >= 10) {
+				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[0] -= 10;
+				material[1] -= 10;
+				material[2] -= 10;
+				bomb++;
+			}
+			else {
+				PlaySoundMem(soundError, DX_PLAYTYPE_BACK);
+			}
 		}
 	}
 	if (sceneSwitch == false && keys[KEY_INPUT_Z] == 1 && oldkeys[KEY_INPUT_Z] == 0) {
