@@ -76,6 +76,7 @@ GameScene::GameScene()
 	GetGraphSize(graphEnemy[0], &sizeEnemyX[0], &sizeEnemyY[0]);
 	GetGraphSize(graphEnemy[1], &sizeEnemyX[1], &sizeEnemyY[1]);
 	GetGraphSize(graphEnemy[2], &sizeEnemyX[2], &sizeEnemyY[2]);
+	LoadDivGraph("Graphics/DE47H.png", 7, 7, 1, 32, 32, graphDefeat);
 	graphBeam[0] = LoadGraph("Graphics/shotNormal.png");
 	graphBeam[1] = LoadGraph("Graphics/shotTwin.png");
 	graphBeam[2] = LoadGraph("Graphics/shotHoming.png");
@@ -383,6 +384,9 @@ int GameScene::Update(char* keys, char* oldkeys)
 					shot[i] = false;
 					enemyHP[j] -= power[i];
 					if (enemyHP[j] <= 0) {
+						defeated[j] = true;
+						defeatX[j] = enemyX[j];
+						defeatY[j] = enemyY[j];
 						enemyAlive[j] = false;
 						material[enemyType[j]]++;
 						homingLocked = ENEMYLIMIT * 10;
@@ -481,6 +485,13 @@ int GameScene::Update(char* keys, char* oldkeys)
 	if (avoid > 0) { avoid--; }
 	bgY += 4;
 	if (bgY >= areaY) { bgY -= areaY; }
+	for (int i = 0; i < ENEMYLIMIT; i++)
+	{
+		if (defeated[i] == true && animDefeat[i] >= 7) {
+			defeated[i] = false;
+			animDefeat[i] = 0;
+		}
+	}
 
 	return play;
 }
@@ -522,6 +533,9 @@ void GameScene::Draw()
 					graphEnemy[fairy], true);
 				break;
 			}
+		}
+		if (defeated[i] == true) {
+			DrawRotaGraph(defeatX[i] + areaLeft, defeatY[i] + areaTop, 1.0f, GetRand(360), graphDefeat[animDefeat[i]++], true);
 		}
 	}
 	for (int i = 0; i < ALLBEAM; i++)

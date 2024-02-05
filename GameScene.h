@@ -35,6 +35,10 @@ private:
 	int enemyHP[ENEMYLIMIT] = {};
 	int homingTarget[ENEMYLIMIT] = {};
 	bool enemyAlive[ENEMYLIMIT] = {};
+	int animDefeat[ENEMYLIMIT] = {};
+	int defeatX[ENEMYLIMIT] = {};
+	int defeatY[ENEMYLIMIT] = {};
+	bool defeated[ENEMYLIMIT] = {};
 	int enemyR;
 	int enemyCount;
 
@@ -78,6 +82,7 @@ private:
 	int graphEnemy[3];
 	int sizeEnemyX[3];
 	int sizeEnemyY[3];
+	int graphDefeat[7];
 	int graphBeam[3];
 	int graphFrame;
 	int graphButton;
