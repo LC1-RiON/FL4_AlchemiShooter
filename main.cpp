@@ -70,16 +70,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ClearDrawScreen();
 
 		/*ƒQ[ƒ€ˆ—*/
-		/*BGMÄ¶*/
-		//if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK); }
-		//if (CheckSoundMem(bgmMix) == 0) { PlaySoundMem(bgmMix, DX_PLAYTYPE_LOOP); }
-		//else {
-		//	loopTime++;
-		//	if (loopTime >= 3863) {
-		//		loopTime = 0;
-		//		PlaySoundMem(bgmMix, DX_PLAYTYPE_BACK);
-		//	}
-		//}
 		switch (scene)
 		{
 		case title:

@@ -11,6 +11,7 @@ private:
 	static const int areaY = 700;
 
 private:
+	int wave;
 	int bgY;
 
 	int material[3] = {};
@@ -30,7 +31,7 @@ private:
 
 	int mateDigit[3] = {};
 
-	int graphbg01[2];
+	int graphbg[3][2];
 	int graphPlayer;
 	int sizePlayerX;
 	int sizePlayerY;

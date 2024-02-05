@@ -71,7 +71,7 @@ private:
 
 	int bgY;
 
-	int graphbg01[2];
+	int graphbg[3][2];
 	int graphPlayer;
 	int sizePlayerX;
 	int sizePlayerY;

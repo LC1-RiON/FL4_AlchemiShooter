@@ -62,8 +62,12 @@ GameScene::GameScene()
 	material[1] = 0;
 	material[2] = 0;
 
-	graphbg01[0] = LoadGraph("Graphics/bg01.png");
-	graphbg01[1] = LoadGraph("Graphics/bg01.png");
+	graphbg[0][0] = LoadGraph("Graphics/bg01.png");
+	graphbg[0][1] = LoadGraph("Graphics/bg01.png");
+	graphbg[1][0] = LoadGraph("Graphics/bg02.png");
+	graphbg[1][1] = LoadGraph("Graphics/bg02.png");
+	graphbg[2][0] = LoadGraph("Graphics/bg03.png");
+	graphbg[2][1] = LoadGraph("Graphics/bg03.png");
 	graphPlayer = LoadGraph("Graphics/player.png");
 	GetGraphSize(graphPlayer, &sizePlayerX, &sizePlayerY);
 	graphEnemy[0] = LoadGraph("Graphics/enemy01.png");
@@ -136,7 +140,7 @@ void GameScene::Initialize(DataManager* dataManager)
 	FirstInit();
 
 	dataManager->GiveData(
-		bgY, material[0], material[1], material[2],
+		wave, bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2], recipeY,
 		mateDigit[0], mateDigit[1], mateDigit[2],
 		reloadSpeed, shield, warp, bomb);
@@ -485,7 +489,7 @@ void GameScene::Draw()
 {
 	for (int i = 0; i < 2; i++)
 	{
-		DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg01[i], true);
+		DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg[wave-1][i], true);
 	}
 	if (avoid % 2 == 0) {
 		DrawGraph(x - sizePlayerX / 2 + areaLeft, y - sizePlayerY / 2 + areaTop, graphPlayer, true);
@@ -601,7 +605,7 @@ void GameScene::Draw()
 void GameScene::DataSave(DataManager* dataManager)
 {
 	dataManager->GetData(
-		bgY, material[0], material[1], material[2],
+		wave + 1, bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2],
 		recipeY, mateDigit[0], mateDigit[1], mateDigit[2],
 		reloadSpeed, shield, warp, bomb);

@@ -6,6 +6,7 @@
 
 MixScene::MixScene()
 {
+	wave = 0;
 	bgY = -1;
 
 	reloadSpeed = 0;
@@ -18,8 +19,12 @@ MixScene::MixScene()
 	recipeY = 0;
 	moveTime = 0;
 
-	graphbg01[0] = LoadGraph("Graphics/bg01.png");
-	graphbg01[1] = LoadGraph("Graphics/bg01.png");
+	graphbg[0][0] = LoadGraph("Graphics/bg01.png");
+	graphbg[0][1] = LoadGraph("Graphics/bg01.png");
+	graphbg[1][0] = LoadGraph("Graphics/bg02.png");
+	graphbg[1][1] = LoadGraph("Graphics/bg02.png");
+	graphbg[2][0] = LoadGraph("Graphics/bg03.png");
+	graphbg[2][1] = LoadGraph("Graphics/bg03.png");
 	graphPlayer = LoadGraph("Graphics/player.png");
 	GetGraphSize(graphPlayer, &sizePlayerX, &sizePlayerY);
 	graphRecipe = LoadGraph("Graphics/recipe_proto1.1.png");
@@ -53,7 +58,7 @@ void MixScene::Initialize(DataManager* dataManager)
 	FirstInit();
 
 	dataManager->GiveData(
-		bgY, material[0], material[1], material[2],
+		wave, bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2], recipeY,
 		mateDigit[0], mateDigit[1], mateDigit[2],
 		reloadSpeed, shield, warp, bomb);
@@ -102,9 +107,9 @@ int MixScene::Update(char* keys, char* oldkeys)
 			}
 		}
 		else if (cursor[0] == 0 && cursor[1] == 1) {
-			if (material[1] >= 15) {
+			if (material[1] >= 20) {
 				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-				material[1] -= 10;
+				material[1] -= 20;
 				beamLevel[twin]++;
 			}
 			else {
@@ -114,7 +119,7 @@ int MixScene::Update(char* keys, char* oldkeys)
 		else if (cursor[0] == 0 && cursor[1] == 2) {
 			if (material[2] >= 15) {
 				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-				material[2] -= 10;
+				material[2] -= 15;
 				beamLevel[homing]++;
 			}
 			else {
@@ -207,7 +212,7 @@ void MixScene::Draw()
 {
 	for (int i = 0; i < 2; i++)
 	{
-		DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg01[i], true);
+		DrawGraph(areaLeft, areaTop + bgY - areaY * i, graphbg[wave - 1][i], true);
 	}
 	DrawGraph(areaX / 2 - sizePlayerX / 2 + areaLeft, areaY - 100 - sizePlayerY / 2 + areaTop, graphPlayer, true);
 	DrawGraph(areaLeft, recipeY + areaTop - areaY, graphRecipe, true);
@@ -223,29 +228,20 @@ void MixScene::Draw()
 	{
 		DrawExtendGraph(900 - 32 * i, 84, 932 - 32 * i, 116, font[material[0] / int(pow(10, i)) % 10], true);
 	}
-	if (mateDigit[0] == 0) {
-		//DrawExtendGraph(900, 84, 932, 116, font[0], true);
-	}
 	for (int i = 0; i < mateDigit[1]; i++)
 	{
 		DrawExtendGraph(1000 - 32 * i, 84, 1032 - 32 * i, 116, font[material[1] / int(pow(10, i)) % 10], true);
 	}
-	if (mateDigit[1] == 0) {
-		//DrawExtendGraph(1000, 84, 1032, 116, font[0], true);
-	}
 	for (int i = 0; i < mateDigit[2]; i++)
 	{
 		DrawExtendGraph(1100 - 32 * i, 84, 1132 - 32 * i, 116, font[material[2] / int(pow(10, i)) % 10], true);
-	}
-	if (mateDigit[2] == 0) {
-		//DrawExtendGraph(1100, 84, 1132, 116, font[0], true);
 	}
 }
 
 void MixScene::DataSave(DataManager* dataManager)
 {
 	dataManager->GetData(
-		bgY, material[0], material[1], material[2],
+		wave, bgY, material[0], material[1], material[2],
 		beamLevel[0], beamLevel[1], beamLevel[2],
 		recipeY, mateDigit[0], mateDigit[1], mateDigit[2],
 		reloadSpeed, shield, warp, bomb);
