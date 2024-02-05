@@ -122,10 +122,10 @@ int MixScene::Update(char* keys, char* oldkeys)
 			}
 		}
 		else if (cursor[0] == 1 && cursor[1] == 0) {
-			if (material[0] >= 10 && material[1] >= 10) {
+			if (material[0] >= 20 && material[1] >= 15) {
 				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-				material[0] -= 10;
-				material[1] -= 10;
+				material[0] -= 15;
+				material[1] -= 15;
 				reloadSpeed++;
 			}
 			else {
@@ -133,9 +133,9 @@ int MixScene::Update(char* keys, char* oldkeys)
 			}
 		}
 		else if (cursor[0] == 1 && cursor[1] == 1) {
-			if (material[1] >= 10 && material[2] >= 10) {
+			if (material[0] >= 20 && material[2] >= 10) {
 				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-				material[1] -= 10;
+				material[0] -= 20;
 				material[2] -= 10;
 				shield++;
 			}
@@ -144,10 +144,10 @@ int MixScene::Update(char* keys, char* oldkeys)
 			}
 		}
 		else if (cursor[0] == 1 && cursor[1] == 2) {
-			if (material[2] >= 10 && material[0] >= 10) {
+			if (material[1] >= 15 && material[2] >= 10) {
 				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
+				material[1] -= 15;
 				material[2] -= 10;
-				material[0] -= 10;
 				warp++;
 			}
 			else {
@@ -155,10 +155,10 @@ int MixScene::Update(char* keys, char* oldkeys)
 			}
 		}
 		else if (cursor[0] == 1 && cursor[1] == 3) {
-			if (material[0] >= 10 && material[1] >= 10 && material[2] >= 10) {
+			if (material[0] >= 20 && material[1] >= 15 && material[2] >= 10) {
 				PlaySoundMem(soundMixUp, DX_PLAYTYPE_BACK);
-				material[0] -= 10;
-				material[1] -= 10;
+				material[0] -= 20;
+				material[1] -= 15;
 				material[2] -= 10;
 				bomb++;
 			}
